@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CanonicalProperty",
+  "type": "object",
+  "required": [
+    "source_domain",
+    "source_url",
+    "listing_id",
+    "agent_name",
+    "sale_or_rent",
+    "listing_status",
+    "price_amount",
+    "price_currency",
+    "price_frequency",
+    "address_full",
+    "property_type",
+    "description",
+    "extraction_confidence",
+    "evidence"
+  ],
+  "properties": {
+    "source_domain": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "listing_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "agent_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "sale_or_rent": {
+      "enum": [
+        "sale",
+        "rent"
+      ]
+    },
+    "listing_status": {
+      "enum": [
+        "available",
+        "under_offer",
+        "sstc",
+        "let_agreed",
+        "withdrawn",
+        "unknown"
+      ]
+    },
+    "price_amount": {
+      "type": "number",
+      "minimum": 0
+    },
+    "price_currency": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3
+    },
+    "price_frequency": {
+      "enum": [
+        "total",
+        "pcm",
+        "pw",
+        "pa"
+      ]
+    },
+    "address_full": {
+      "type": "string",
+      "minLength": 1
+    },
+    "postcode": {
+      "type": "string"
+    },
+    "latitude": {
+      "type": "number"
+    },
+    "longitude": {
+      "type": "number"
+    },
+    "property_type": {
+      "enum": [
+        "flat",
+        "apartment",
+        "house",
+        "maisonette",
+        "studio",
+        "bungalow",
+        "other"
+      ]
+    },
+    "bedrooms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "bathrooms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "reception_rooms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "floor_area_sqft": {
+      "type": "number",
+      "minimum": 0
+    },
+    "floor_area_sqm": {
+      "type": "number",
+      "minimum": 0
+    },
+    "tenure": {
+      "enum": [
+        "freehold",
+        "leasehold",
+        "share_of_freehold",
+        "commonhold",
+        "unknown"
+      ]
+    },
+    "epc_rating": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uri"
+      }
+    },
+    "floorplans": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uri"
+      }
+    },
+    "added_date": {
+      "type": "string"
+    },
+    "updated_date": {
+      "type": "string"
+    },
+    "availability_text": {
+      "type": "string"
+    },
+    "extraction_confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "field",
+          "source",
+          "locator"
+        ],
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "jsonld",
+              "dom",
+              "script_blob",
+              "llm",
+              "adapter"
+            ]
+          },
+          "locator": {
+            "type": "string"
+          },
+          "excerpt": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

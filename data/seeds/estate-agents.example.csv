@@ -1,0 +1,3 @@
+agent_id,brand_name,branch_name,domain,homepage_url,start_url,geo_hint,notes,enabled
+ea_0001,Example Estates,Islington,example-estates.co.uk,https://www.example-estates.co.uk,https://www.example-estates.co.uk/properties,London,Example only,true
+ea_0002,Sample Homes,Greenwich,sample-homes.co.uk,https://www.sample-homes.co.uk,https://www.sample-homes.co.uk/for-sale,London,Example only,true

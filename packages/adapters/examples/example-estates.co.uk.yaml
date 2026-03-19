@@ -1,0 +1,31 @@
+domain: example-estates.co.uk
+enabled: true
+start_urls:
+  - https://www.example-estates.co.uk/properties
+allowed_paths:
+  - /properties
+exclude_patterns:
+  - /blog
+  - /careers
+listing_page_patterns:
+  - /properties
+detail_page_patterns:
+  - /property/
+pagination: link
+selectors:
+  price:
+    - '[data-testid="price"]'
+    - '.property-price'
+  address:
+    - 'h1'
+  bedrooms:
+    - '[data-testid="bedrooms"]'
+  bathrooms:
+    - '[data-testid="bathrooms"]'
+  description:
+    - '.property-description'
+  features:
+    - '.property-features li'
+structured_data_priority: true
+llm_fallback: true
+notes: Example adapter template only. Replace selectors with real site signals.

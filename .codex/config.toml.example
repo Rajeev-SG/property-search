@@ -1,0 +1,18 @@
+# Example Codex MCP config
+# Copy relevant sections into your real Codex config as needed.
+
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"
+
+# Firecrawl hosted MCP example:
+# [mcp_servers.firecrawl]
+# url = "https://mcp.firecrawl.dev/${FIRECRAWL_API_KEY}/v2/mcp"
+
+# Firecrawl local stdio example:
+# [mcp_servers.firecrawl_local]
+# command = "npx"
+# args = ["-y", "firecrawl-mcp"]
+# env = { FIRECRAWL_API_KEY = "${FIRECRAWL_API_KEY}" }
+
+# Codex itself can also be launched as an MCP server externally via:
+#   codex mcp-server

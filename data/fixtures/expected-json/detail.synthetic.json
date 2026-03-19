@@ -1,0 +1,38 @@
+{
+  "source_domain": "example-estates.co.uk",
+  "source_url": "https://www.example-estates.co.uk/property/123-river-view-london-n1",
+  "listing_id": "123-river-view-london-n1",
+  "agent_name": "Example Estates",
+  "branch_name": "Islington",
+  "sale_or_rent": "sale",
+  "listing_status": "available",
+  "price_amount": 650000,
+  "price_currency": "GBP",
+  "price_frequency": "total",
+  "address_full": "River View, London N1",
+  "postcode": "N1",
+  "property_type": "flat",
+  "bedrooms": 2,
+  "bathrooms": 1,
+  "description": "A bright two-bedroom flat close to transport.",
+  "features": [
+    "close to transport"
+  ],
+  "images": [],
+  "floorplans": [],
+  "tenure": "unknown",
+  "extraction_confidence": 0.91,
+  "evidence": [
+    {
+      "field": "price_amount",
+      "source": "jsonld",
+      "locator": "script[type='application/ld+json']",
+      "excerpt": "\"price\":\"650000\""
+    },
+    {
+      "field": "address_full",
+      "source": "dom",
+      "locator": "h1"
+    }
+  ]
+}
