@@ -55,11 +55,19 @@
 - `.symphony/bin/gh`
 - `docs/DEVELOPMENT_LOG.md`
 
-### Validation planned
+### Validation performed
 
 - Run `pnpm run doctor`.
 - Run `pnpm typecheck`.
-- Run `pnpm exec vitest run tests/workflow-contract.test.ts tests/symphony-gh-guard.test.ts`.
+- Run `pnpm validate:fixture`.
+- Run `pnpm test -- tests/workflow-contract.test.ts tests/symphony-gh-guard.test.ts`.
+
+### Validation results
+
+- Harness doctor passed.
+- Root TypeScript checks passed.
+- Synthetic fixture validation passed.
+- Vitest passed, including the workflow-contract and gh-guard coverage for the repo-local OpenReview trigger fallback and final Linear handoff comment.
 
 ## 2026-03-20T16:10:00Z — RAJ-23 workflow bootstrap remote normalization
 
