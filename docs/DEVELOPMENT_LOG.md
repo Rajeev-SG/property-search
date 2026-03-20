@@ -1,5 +1,59 @@
 # Development Log
 
+## 2026-03-20T05:29:46Z — Ticket 006 provider abstraction and config wiring
+
+### What changed
+
+- Extended the partial `@property-search/crawl` scaffolding into a stable provider abstraction with explicit role contracts for discovery, static fetch, render, schema extraction, browser automation, and escalation.
+- Added a provider registry/runtime resolution layer that separates configured provider names from actual runtime implementation, keeps `fake` execution as the repo default, and allows later tickets to register live factories per role/provider pair.
+- Added a provider catalog with credential requirements, richer provider summary output, and a `pnpm providers:print` CLI path for inspecting resolved defaults, credential availability, runtime mode, and fallback reasons.
+- Expanded provider-config tests to cover repo-managed env loading, deterministic fake execution, invalid config rejection, `auto`-mode fake fallback, and injected live-factory resolution.
+- Updated `.env.example`, architecture notes, provider references, MCP notes, README commands, and status files so the documented provider contract matches the implementation.
+
+### Why it changed
+
+Ticket `006` requires a stable internal abstraction layer before later crawl/render/LLM tickets start binding directly to Firecrawl, Cloudflare, browser-use, or Bright Data. The registry now preserves local deterministic execution while keeping vendor-targeted defaults and credential requirements explicit.
+
+### Files touched
+
+- `.env.example`
+- `ARCHITECTURE.md`
+- `README.md`
+- `apps/cli/package.json`
+- `apps/cli/src/index.ts`
+- `docs/design-docs/provider-escalation.md`
+- `docs/references/mcp-setup.md`
+- `docs/references/providers.md`
+- `docs/PROJECT_STATUS.md`
+- `docs/TICKET_INDEX.md`
+- `docs/DEVELOPMENT_LOG.md`
+- `package.json`
+- `packages/crawl/package.json`
+- `packages/crawl/src/config.ts`
+- `packages/crawl/src/fakes.ts`
+- `packages/crawl/src/index.ts`
+- `packages/crawl/src/provider.ts`
+- `packages/crawl/src/registry.ts`
+- `tests/provider-config.test.ts`
+- `tsconfig.base.json`
+- `vitest.config.ts`
+
+### Validation performed
+
+- Ran `pnpm typecheck`.
+- Ran `pnpm run typecheck:workspace`.
+- Ran `pnpm validate:fixture`.
+- Ran `pnpm test -- tests/provider-config.test.ts`.
+- Ran `pnpm test`.
+- Ran `pnpm providers:print`.
+
+### Validation results
+
+- Root and workspace typechecks: passed.
+- Synthetic fixture validation: passed.
+- Provider-config coverage and full Vitest suite: passed.
+- `pnpm providers:print` reported the configured vendor defaults, credential availability, `PROVIDER_EXECUTION_MODE=fake`, and deterministic fake-provider resolution for every role.
+
 ## 2026-03-20T04:40:00Z — Ticket 005 run ledger and local artifact storage foundation
 
 ### What changed

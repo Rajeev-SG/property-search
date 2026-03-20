@@ -7,6 +7,7 @@
     "dev": "node --import tsx ./src/index.ts",
     "doctor": "node --import tsx ./src/index.ts doctor",
     "plans": "node --import tsx ./src/index.ts plans",
+    "providers": "node --import tsx ./src/index.ts providers",
     "validate-fixture": "node --import tsx ./src/index.ts validate-fixture",
     "db:migrate": "node --import tsx ./src/index.ts db migrate",
     "db:status": "node --import tsx ./src/index.ts db status",
@@ -15,6 +16,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@property-search/crawl": "workspace:*",
     "@property-search/harness": "workspace:*",
     "commander": "14.0.3"
   }

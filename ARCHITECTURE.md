@@ -70,6 +70,11 @@ The system is split into layers:
 - pay for unblocking only when necessary
 - preserve a single internal extraction pipeline regardless of upstream provider
 
+### Runtime wiring
+- Provider names are configured per role from repo-managed env values.
+- The local harness defaults to `PROVIDER_EXECUTION_MODE=fake`, so the registry resolves to deterministic fake providers even when the configured provider name is Firecrawl, Cloudflare, browser-use, or Bright Data.
+- `PROVIDER_EXECUTION_MODE=auto` only switches a role to a live implementation when credentials are present and that role/provider pair has a registered live factory. Otherwise the registry falls back to the fake implementation and records the reason in the provider summary.
+
 ## Data model
 
 The repo should treat these as separate but related layers.

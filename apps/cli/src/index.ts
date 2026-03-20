@@ -1,5 +1,9 @@
 import { Command } from "commander";
 import {
+  createProviderRegistry,
+  summarizeProviderRegistry
+} from "@property-search/crawl";
+import {
   applyMigrations,
   runArtifactStorageSmoke,
   printMigrationStatus,
@@ -28,6 +32,14 @@ program
   .description("List execution plans")
   .action(async () => {
     await listPlans();
+  });
+
+program
+  .command("providers")
+  .description("Print resolved provider defaults, runtime mode, and registry wiring")
+  .action(async () => {
+    const registry = createProviderRegistry();
+    console.log(JSON.stringify(summarizeProviderRegistry(registry), null, 2));
   });
 
 program

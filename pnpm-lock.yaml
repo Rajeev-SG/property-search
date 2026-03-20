@@ -51,6 +51,9 @@ importers:
 
   apps/cli:
     dependencies:
+      '@property-search/crawl':
+        specifier: workspace:*
+        version: link:../../packages/crawl
       '@property-search/harness':
         specifier: workspace:*
         version: link:../../packages/harness

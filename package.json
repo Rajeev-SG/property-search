@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "doctor": "node --import tsx ./scripts/doctor.ts",
+    "providers:print": "pnpm --filter @property-search/cli run providers",
     "db:migrate": "node --import tsx ./scripts/db-migrate.ts",
     "db:status": "node --import tsx ./scripts/db-status.ts",
     "db:verify": "node --import tsx ./scripts/db-verify.ts",
