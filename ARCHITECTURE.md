@@ -87,6 +87,7 @@ Stores:
 ### Extracted listing record
 Stores:
 - source URL
+- source domain and listing identifier
 - raw extracted fields
 - confidence
 - evidence
@@ -94,9 +95,11 @@ Stores:
 
 ### Canonical property record
 Stores:
+- canonical property identifier
 - normalized search fields
 - dedupe cluster keys
 - source listing references
+- aggregate evidence/count signals
 - freshness timestamps
 
 ### Search document
@@ -104,6 +107,14 @@ Stores:
 - indexable projection derived from canonical property records
 - facet-friendly values
 - denormalized display fields needed for local search
+- string-friendly listing references for index payloads
+
+### Contract ownership
+
+- Extraction produces `ExtractedListing`.
+- Normalization and dedupe produce `CanonicalProperty`.
+- Search indexing produces `SearchDocument`.
+- Each boundary is schema-validated before the next stage consumes it.
 
 ## Local storage layout
 

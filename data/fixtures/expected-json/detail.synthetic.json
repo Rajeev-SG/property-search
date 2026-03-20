@@ -1,4 +1,5 @@
 {
+  "record_type": "extracted_listing",
   "source_domain": "example-estates.co.uk",
   "source_url": "https://www.example-estates.co.uk/property/123-river-view-london-n1",
   "listing_id": "123-river-view-london-n1",
@@ -27,12 +28,14 @@
       "field": "price_amount",
       "source": "jsonld",
       "locator": "script[type='application/ld+json']",
+      "value": "650000",
       "excerpt": "\"price\":\"650000\""
     },
     {
       "field": "address_full",
       "source": "dom",
-      "locator": "h1"
+      "locator": "h1",
+      "excerpt": "River View, London N1"
     }
   ]
 }

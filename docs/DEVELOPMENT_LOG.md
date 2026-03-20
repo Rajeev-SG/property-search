@@ -400,3 +400,57 @@ Block reason:
 - Run `pnpm install`.
 - Run `docker compose up -d` before infra-dependent tickets.
 - Confirm the intended long-term contract for the enriched source CSV.
+
+## 2026-03-20 — Ticket 003 contract expansion
+
+### What changed
+
+- Expanded `packages/domain/src/canonicalProperty.ts` from a single overloaded contract into explicit `ExtractedListing`, `CanonicalProperty`, and `SearchDocument` schemas with shared enums and evidence primitives.
+- Reworked `packages/domain/src/canonical-property.schema.json` to expose all three contracts under `$defs` while keeping the root schema compatible with extracted-listing validation.
+- Tightened evidence expectations so extracted-listing evidence must retain a field name, source, locator, and either a raw value or excerpt.
+- Added synthetic canonical-property and search-document fixtures and updated the existing extracted-listing fixture with explicit evidence payloads.
+- Updated fixture validation and tests so `pnpm validate:fixture` and `pnpm test` now cover all three contract layers.
+- Added an Ajv-backed test to validate the machine-readable JSON schema against the extracted-listing, canonical-property, and search-document fixtures.
+- Refreshed contract and architecture docs to define the layer boundaries, facet ownership, and quality-score expectations.
+
+### Validation performed
+
+- Ran `pnpm run doctor`.
+- Ran `pnpm validate:fixture`.
+- Ran `pnpm typecheck`.
+- Ran `pnpm run typecheck:workspace`.
+- Ran `pnpm test`.
+- Ran `pnpm run smoke:cli`.
+
+### Blockers
+
+- `git checkout -b rajeevsgill/raj-6-003-canonical-schema-and-domain-contract-expansion` failed because the current sandbox cannot write under `.git/refs`.
+- `gh auth status` failed because the configured `github.com` token is invalid.
+
+### Next follow-up
+
+- Resume in a git-writable workspace.
+- Re-authenticate `gh`.
+- Create the ticket branch, commit the validated changes, and continue PR automation from there.
+
+### Tracker state
+
+- Linear issue `RAJ-6` was moved to `In Review` because implementation and validation are complete, but the unattended branch/PR handoff is blocked by sandboxed `.git` writes and invalid GitHub auth.
+
+## 2026-03-20 — Ticket 003 follow-up validation
+
+### What changed
+
+- Fixed the `tests/domain-schema-json.test.ts` Ajv import path so the new machine-readable schema test passes both `vitest` and repo-wide TypeScript validation.
+
+### Validation performed
+
+- Ran `pnpm run doctor`.
+- Ran `pnpm validate:fixture`.
+- Ran `pnpm typecheck`.
+- Ran `pnpm test`.
+
+### Blockers
+
+- `git checkout -b rajeevsgill/raj-6-003-canonical-schema-and-domain-contract-expansion` still fails because the workspace cannot create refs under `.git/refs/heads`.
+- `gh auth status` still reports the configured `github.com` token is invalid, so unattended PR creation and merge checks remain unavailable.

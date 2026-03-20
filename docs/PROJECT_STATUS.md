@@ -6,7 +6,7 @@ Build a local-first TypeScript monorepo that ingests estate-agent websites from 
 
 ## Current phase
 
-Monorepo bootstrap is complete. The repo is ready to start Ticket `003` for canonical schema and domain contract expansion.
+Ticket `003` implementation is complete locally and validated, and unattended git/PR handoff is now in progress from a git-writable workspace with working GitHub auth.
 
 ## Current active ticket ID
 
@@ -14,7 +14,7 @@ Monorepo bootstrap is complete. The repo is ready to start Ticket `003` for cano
 
 ## Current active ticket status
 
-`not_started`
+`in_progress`
 
 ## Summary of last completed work
 
@@ -26,22 +26,21 @@ Completed Ticket `002` by hardening workspace/package boundaries, root validatio
 
 ## Exact next recommended action
 
-1. Start Ticket `003` to expand the canonical schema and domain contracts needed for extraction, normalization, dedupe, and indexing.
-2. Run `docker compose up -d` before infra-dependent implementation work.
-3. Keep the validation baseline from Ticket `002` green as new package code is added.
+1. Commit the validated Ticket `003` contract changes on the active ticket branch.
+2. Create or update the ticket PR and inspect required checks plus review state.
+3. Merge once checks are green and no blocking review signals remain, then advance to Ticket `004`.
 
 ## Next-session routing
 
-The next agent should start `003-canonical-schema-and-domain-contract-expansion.md`.
+The next agent should continue `003-canonical-schema-and-domain-contract-expansion.md` from `In Progress` state and finish commit/PR/merge handoff if this session stops before merge.
 
 ## Required human actions
 
-- No human action is required for repo code changes.
-- Run `docker compose up -d` before infra-dependent implementation tickets.
+- No human action is currently required.
 
 ## Last updated timestamp
 
-2026-03-20T00:56:00Z
+2026-03-20T03:15:00Z
 
 ## Source-of-truth note
 

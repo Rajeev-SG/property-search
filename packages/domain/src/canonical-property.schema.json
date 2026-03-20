@@ -1,50 +1,16 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "CanonicalProperty",
-  "type": "object",
-  "required": [
-    "source_domain",
-    "source_url",
-    "listing_id",
-    "agent_name",
-    "sale_or_rent",
-    "listing_status",
-    "price_amount",
-    "price_currency",
-    "price_frequency",
-    "address_full",
-    "property_type",
-    "description",
-    "extraction_confidence",
-    "evidence"
-  ],
-  "properties": {
-    "source_domain": {
-      "type": "string",
-      "minLength": 1
-    },
-    "source_url": {
-      "type": "string",
-      "format": "uri"
-    },
-    "listing_id": {
-      "type": "string",
-      "minLength": 1
-    },
-    "agent_name": {
-      "type": "string",
-      "minLength": 1
-    },
-    "branch_name": {
-      "type": "string"
-    },
-    "sale_or_rent": {
+  "title": "PropertySearchDomainContracts",
+  "description": "Machine-readable extracted-listing, canonical-property, and search-document contracts. The document root defaults to ExtractedListing for fixture compatibility.",
+  "$ref": "#/$defs/ExtractedListing",
+  "$defs": {
+    "SaleOrRent": {
       "enum": [
         "sale",
         "rent"
       ]
     },
-    "listing_status": {
+    "ListingStatus": {
       "enum": [
         "available",
         "under_offer",
@@ -54,16 +20,7 @@
         "unknown"
       ]
     },
-    "price_amount": {
-      "type": "number",
-      "minimum": 0
-    },
-    "price_currency": {
-      "type": "string",
-      "minLength": 3,
-      "maxLength": 3
-    },
-    "price_frequency": {
+    "PriceFrequency": {
       "enum": [
         "total",
         "pcm",
@@ -71,20 +28,7 @@
         "pa"
       ]
     },
-    "address_full": {
-      "type": "string",
-      "minLength": 1
-    },
-    "postcode": {
-      "type": "string"
-    },
-    "latitude": {
-      "type": "number"
-    },
-    "longitude": {
-      "type": "number"
-    },
-    "property_type": {
+    "PropertyType": {
       "enum": [
         "flat",
         "apartment",
@@ -95,27 +39,7 @@
         "other"
       ]
     },
-    "bedrooms": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "bathrooms": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "reception_rooms": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "floor_area_sqft": {
-      "type": "number",
-      "minimum": 0
-    },
-    "floor_area_sqm": {
-      "type": "number",
-      "minimum": 0
-    },
-    "tenure": {
+    "Tenure": {
       "enum": [
         "freehold",
         "leasehold",
@@ -124,77 +48,634 @@
         "unknown"
       ]
     },
-    "epc_rating": {
-      "type": "string"
+    "EvidenceSource": {
+      "enum": [
+        "jsonld",
+        "dom",
+        "script_blob",
+        "llm",
+        "adapter"
+      ]
     },
-    "description": {
+    "ExtractedListingField": {
+      "enum": [
+        "source_domain",
+        "source_url",
+        "listing_id",
+        "agent_name",
+        "branch_name",
+        "sale_or_rent",
+        "listing_status",
+        "price_amount",
+        "price_currency",
+        "price_frequency",
+        "address_full",
+        "postcode",
+        "latitude",
+        "longitude",
+        "property_type",
+        "bedrooms",
+        "bathrooms",
+        "reception_rooms",
+        "floor_area_sqft",
+        "floor_area_sqm",
+        "tenure",
+        "epc_rating",
+        "description",
+        "features",
+        "images",
+        "floorplans",
+        "added_date",
+        "updated_date",
+        "availability_text"
+      ]
+    },
+    "IsoTimestamp": {
       "type": "string",
-      "minLength": 1
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
     },
-    "features": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
+    "ExtractionEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "field",
+        "source",
+        "locator"
+      ],
+      "properties": {
+        "field": {
+          "$ref": "#/$defs/ExtractedListingField"
+        },
+        "source": {
+          "$ref": "#/$defs/EvidenceSource"
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        },
+        "excerpt": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "value"
+          ]
+        },
+        {
+          "required": [
+            "excerpt"
+          ]
+        }
+      ]
     },
-    "images": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "format": "uri"
-      }
-    },
-    "floorplans": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "format": "uri"
-      }
-    },
-    "added_date": {
-      "type": "string"
-    },
-    "updated_date": {
-      "type": "string"
-    },
-    "availability_text": {
-      "type": "string"
-    },
-    "extraction_confidence": {
-      "type": "number",
-      "minimum": 0,
-      "maximum": 1
-    },
-    "evidence": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": [
-          "field",
-          "source",
-          "locator"
-        ],
-        "properties": {
-          "field": {
-            "type": "string"
-          },
-          "source": {
-            "enum": [
-              "jsonld",
-              "dom",
-              "script_blob",
-              "llm",
-              "adapter"
-            ]
-          },
-          "locator": {
-            "type": "string"
-          },
-          "excerpt": {
-            "type": "string"
-          }
+    "SourceListingReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_domain",
+        "source_url",
+        "listing_id"
+      ],
+      "properties": {
+        "source_domain": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "listing_id": {
+          "type": "string",
+          "minLength": 1
         }
       }
+    },
+    "ExtractedListing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_domain",
+        "source_url",
+        "listing_id",
+        "agent_name",
+        "sale_or_rent",
+        "listing_status",
+        "price_amount",
+        "price_currency",
+        "price_frequency",
+        "address_full",
+        "property_type",
+        "description",
+        "extraction_confidence",
+        "evidence"
+      ],
+      "properties": {
+        "record_type": {
+          "const": "extracted_listing"
+        },
+        "source_domain": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "listing_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "agent_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "branch_name": {
+          "type": "string"
+        },
+        "sale_or_rent": {
+          "$ref": "#/$defs/SaleOrRent"
+        },
+        "listing_status": {
+          "$ref": "#/$defs/ListingStatus"
+        },
+        "price_amount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "price_currency": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 3
+        },
+        "price_frequency": {
+          "$ref": "#/$defs/PriceFrequency"
+        },
+        "address_full": {
+          "type": "string",
+          "minLength": 1
+        },
+        "postcode": {
+          "type": "string"
+        },
+        "latitude": {
+          "type": "number"
+        },
+        "longitude": {
+          "type": "number"
+        },
+        "property_type": {
+          "$ref": "#/$defs/PropertyType"
+        },
+        "bedrooms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bathrooms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reception_rooms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "floor_area_sqft": {
+          "type": "number",
+          "minimum": 0
+        },
+        "floor_area_sqm": {
+          "type": "number",
+          "minimum": 0
+        },
+        "tenure": {
+          "$ref": "#/$defs/Tenure"
+        },
+        "epc_rating": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "floorplans": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "added_date": {
+          "type": "string"
+        },
+        "updated_date": {
+          "type": "string"
+        },
+        "availability_text": {
+          "type": "string"
+        },
+        "extraction_confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/ExtractionEvidence"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "latitude"
+            ]
+          },
+          "then": {
+            "required": [
+              "longitude"
+            ]
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "longitude"
+            ]
+          },
+          "then": {
+            "required": [
+              "latitude"
+            ]
+          }
+        }
+      ]
+    },
+    "CanonicalProperty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "property_id",
+        "source_listing_refs",
+        "source_domains",
+        "agent_names",
+        "sale_or_rent",
+        "listing_status",
+        "price_amount",
+        "price_currency",
+        "price_frequency",
+        "address_full",
+        "property_type",
+        "summary",
+        "dedupe_key",
+        "listing_count",
+        "evidence_count",
+        "extraction_confidence",
+        "first_seen_at",
+        "last_seen_at"
+      ],
+      "properties": {
+        "record_type": {
+          "const": "canonical_property"
+        },
+        "property_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_listing_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/SourceListingReference"
+          }
+        },
+        "source_domains": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "agent_names": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "sale_or_rent": {
+          "$ref": "#/$defs/SaleOrRent"
+        },
+        "listing_status": {
+          "$ref": "#/$defs/ListingStatus"
+        },
+        "price_amount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "price_currency": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 3
+        },
+        "price_frequency": {
+          "$ref": "#/$defs/PriceFrequency"
+        },
+        "address_full": {
+          "type": "string",
+          "minLength": 1
+        },
+        "postcode": {
+          "type": "string"
+        },
+        "latitude": {
+          "type": "number"
+        },
+        "longitude": {
+          "type": "number"
+        },
+        "property_type": {
+          "$ref": "#/$defs/PropertyType"
+        },
+        "bedrooms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bathrooms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reception_rooms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "floor_area_sqft": {
+          "type": "number",
+          "minimum": 0
+        },
+        "floor_area_sqm": {
+          "type": "number",
+          "minimum": 0
+        },
+        "tenure": {
+          "$ref": "#/$defs/Tenure"
+        },
+        "epc_rating": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "feature_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "floorplan_urls": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "dedupe_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "listing_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "evidence_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "extraction_confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "first_seen_at": {
+          "$ref": "#/$defs/IsoTimestamp"
+        },
+        "last_seen_at": {
+          "$ref": "#/$defs/IsoTimestamp"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "latitude"
+            ]
+          },
+          "then": {
+            "required": [
+              "longitude"
+            ]
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "longitude"
+            ]
+          },
+          "then": {
+            "required": [
+              "latitude"
+            ]
+          }
+        }
+      ]
+    },
+    "SearchDocument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "property_id",
+        "source_listing_ids",
+        "source_domains",
+        "agent_names",
+        "title",
+        "summary",
+        "searchable_text",
+        "sale_or_rent",
+        "listing_status",
+        "price_amount",
+        "price_currency",
+        "price_frequency",
+        "address_full",
+        "property_type",
+        "last_seen_at"
+      ],
+      "properties": {
+        "record_type": {
+          "const": "search_document"
+        },
+        "document_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "property_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_listing_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "source_domains": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "agent_names": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "searchable_text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sale_or_rent": {
+          "$ref": "#/$defs/SaleOrRent"
+        },
+        "listing_status": {
+          "$ref": "#/$defs/ListingStatus"
+        },
+        "price_amount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "price_currency": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 3
+        },
+        "price_frequency": {
+          "$ref": "#/$defs/PriceFrequency"
+        },
+        "address_full": {
+          "type": "string",
+          "minLength": 1
+        },
+        "postcode": {
+          "type": "string"
+        },
+        "latitude": {
+          "type": "number"
+        },
+        "longitude": {
+          "type": "number"
+        },
+        "property_type": {
+          "$ref": "#/$defs/PropertyType"
+        },
+        "bedrooms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bathrooms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tenure": {
+          "$ref": "#/$defs/Tenure"
+        },
+        "feature_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "primary_image_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "last_seen_at": {
+          "$ref": "#/$defs/IsoTimestamp"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "latitude"
+            ]
+          },
+          "then": {
+            "required": [
+              "longitude"
+            ]
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "longitude"
+            ]
+          },
+          "then": {
+            "required": [
+              "latitude"
+            ]
+          }
+        }
+      ]
     }
   }
 }
