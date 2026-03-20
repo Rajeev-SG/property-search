@@ -67,7 +67,11 @@ importers:
         specifier: 4.3.6
         version: 4.3.6
 
-  packages/crawl: {}
+  packages/crawl:
+    dependencies:
+      '@property-search/harness':
+        specifier: workspace:*
+        version: link:../harness
 
   packages/dedupe: {}
 

@@ -1,6 +1,7 @@
 import { Command } from "commander";
 import {
   createProviderRegistry,
+  runFetchPipelineSmoke,
   summarizeProviderRegistry
 } from "@property-search/crawl";
 import {
@@ -85,6 +86,20 @@ artifactsCommand
   .option("--persist-db", "Persist the smoke run ledger to Postgres")
   .action(async (options: { persistDb?: boolean }) => {
     await runArtifactStorageSmoke({
+      persistToDatabase: Boolean(options.persistDb)
+    });
+  });
+
+const crawlCommand = program
+  .command("crawl")
+  .description("Crawl/fetch/render pipeline helpers");
+
+crawlCommand
+  .command("smoke")
+  .description("Run the fixture-backed fetch/render pipeline smoke path")
+  .option("--persist-db", "Persist the smoke run ledger to Postgres")
+  .action(async (options: { persistDb?: boolean }) => {
+    await runFetchPipelineSmoke({
       persistToDatabase: Boolean(options.persistDb)
     });
   });

@@ -37,6 +37,10 @@ Use `pnpm db:smoke` when changing SQL migrations or schema verification logic. I
 
 Use `pnpm artifacts:smoke` when changing the run ledger or filesystem artifact layout. It creates a synthetic run manifest plus sample raw/rendered/extracted/diagnostic files under `artifacts/runs/` so naming and evidence capture can be inspected directly.
 
+## Crawl/fetch smoke tests
+
+Use `pnpm crawl:smoke` when changing Ticket `008` fetch/render orchestration, provider response persistence, or replay diagnostics. It creates a run manifest plus raw/rendered/diagnostic artifacts through the crawl package instead of the lower-level artifact helpers.
+
 ## Eval philosophy
 
 - gold examples live in the repo

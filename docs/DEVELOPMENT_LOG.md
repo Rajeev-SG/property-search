@@ -1,5 +1,58 @@
 # Development Log
 
+## 2026-03-20T14:35:00Z — Ticket 008 fetch/render smoke pipeline foundation
+
+### What changed
+
+- Added a first `@property-search/crawl` fetch pipeline runner that executes static and rendered fetches, persists raw/rendered response bodies into the existing run-ledger layout, and writes a replayable diagnostics artifact summarizing each attempt.
+- Added `pnpm crawl:smoke` plus a matching CLI command so Ticket `008` now has a concrete fetch/render smoke path instead of only lower-level provider and artifact helpers.
+- Extended fake fetch providers to return deterministic HTML payloads and added focused tests for both the all-success path and a partial-failure render path.
+- Updated the architecture, reliability, testing, provider-reference, and status docs so the repo records that Ticket `008` is now in progress with a concrete first slice.
+
+### Why it changed
+
+Ticket `008` needs an actual fetch/render orchestration path that reuses the existing provider registry and run-ledger foundation before discovery or live-provider work broadens the scope. This slice keeps the change small while proving artifact persistence and replayable failure capture end to end.
+
+### Files touched
+
+- `package.json`
+- `apps/cli/package.json`
+- `apps/cli/src/index.ts`
+- `scripts/crawl-fetch-smoke.ts`
+- `packages/crawl/package.json`
+- `packages/crawl/src/fetchPipeline.ts`
+- `packages/crawl/src/fakes.ts`
+- `packages/crawl/src/index.ts`
+- `packages/crawl/src/provider.ts`
+- `packages/crawl/src/smoke.ts`
+- `tests/crawl-fetch-pipeline.test.ts`
+- `README.md`
+- `ARCHITECTURE.md`
+- `docs/RELIABILITY.md`
+- `docs/TESTING.md`
+- `docs/references/providers.md`
+- `docs/PROJECT_STATUS.md`
+- `docs/TICKET_INDEX.md`
+- `docs/DEVELOPMENT_LOG.md`
+
+### Validation performed
+
+- Ran `pnpm install` after the workspace dependency update so `pg` and the internal workspace links were present for the harness package.
+- Ran `pnpm typecheck`.
+- Ran `pnpm run typecheck:workspace`.
+- Ran `pnpm test -- tests/crawl-fetch-pipeline.test.ts`.
+- Ran `pnpm test`.
+- Ran `pnpm crawl:smoke`.
+- Ran `pnpm run smoke:cli`.
+- Inspected `artifacts/runs/2026/03/20/20260320T142611Z-crawl-fetch-render-pipeline-smoke-6bd83c6bbf1d/run.json`.
+
+### Validation results
+
+- Root and workspace TypeScript checks: passed.
+- Focused crawl-pipeline coverage and the full Vitest suite: passed.
+- `pnpm crawl:smoke` created a successful Ticket `008` run manifest with raw, rendered, and diagnostics artifacts plus per-attempt fetch metadata.
+- CLI doctor smoke still passed after the new crawl command wiring.
+
 ## 2026-03-20T11:55:00Z — Symphony runtime handoff reconciliation and OpenReview deployment findings
 
 ### What changed

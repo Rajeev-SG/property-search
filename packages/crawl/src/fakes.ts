@@ -3,6 +3,7 @@ import type {
   BrowserAutomationProvider,
   BrowserAutomationRequest,
   BrowserAutomationProviderName,
+  CrawlResponseFormat,
   CrawlResultArtifact,
   DiscoveryProvider,
   DiscoveryProviderName,
@@ -23,17 +24,51 @@ import type {
   StaticFetchProviderName
 } from "./provider.js";
 
+function extensionForResponseFormat(format: CrawlResponseFormat) {
+  switch (format) {
+    case "json":
+      return "json";
+    case "markdown":
+      return "md";
+    case "text":
+      return "txt";
+    case "html":
+    default:
+      return "html";
+  }
+}
+
 function artifactPathFromRequest(
   request: { artifactPath?: string; url?: string },
   role: string,
-  provider: string
+  provider: string,
+  extension: string = "json"
 ) {
   if (request.artifactPath) {
     return request.artifactPath;
   }
 
   const fallbackSlug = request.url ? new URL(request.url).hostname.replace(/\./g, "-") : "local";
-  return `artifacts/providers/${role}/${provider}/${fallbackSlug}.json`;
+  return `artifacts/providers/${role}/${provider}/${fallbackSlug}.${extension}`;
+}
+
+function createFakeHtmlDocument(
+  request: FetchRequest,
+  role: "static-fetch" | "render",
+  provider: string
+) {
+  const title = role === "render" ? "Rendered demo listing" : "Raw demo listing";
+  const renderFlag = role === "render" ? "true" : "false";
+  return [
+    "<html>",
+    "  <body>",
+    `    <main data-fetch-mode="${role}" data-provider="${provider}" data-rendered="${renderFlag}">`,
+    `      <h1>${title}</h1>`,
+    `      <p>${request.url}</p>`,
+    "    </main>",
+    "  </body>",
+    "</html>"
+  ].join("\n");
 }
 
 function createFetchArtifact(
@@ -42,10 +77,23 @@ function createFetchArtifact(
   provider: string,
   responseFormat: CrawlResultArtifact["responseFormat"]
 ): CrawlResultArtifact {
+  const fetchedAt = new Date().toISOString();
   return {
-    artifactPath: artifactPathFromRequest(request, role, provider),
+    artifactPath: artifactPathFromRequest(
+      request,
+      role,
+      provider,
+      extensionForResponseFormat(responseFormat)
+    ),
+    content: createFakeHtmlDocument(request, role, provider),
+    fetchedAt,
+    metadata: {
+      fake: true,
+      fetchMode: role
+    },
     provider,
     responseFormat,
+    statusCode: 200,
     url: request.url
   };
 }
@@ -106,7 +154,7 @@ export function createFakeSchemaExtractionProvider(
       request: SchemaExtractionRequest
     ): Promise<SchemaExtractionArtifact> {
       return {
-        artifactPath: artifactPathFromRequest(request, "schema-extraction", name),
+        artifactPath: artifactPathFromRequest(request, "schema-extraction", name, "json"),
         payload: {
           fake: true,
           requestedSchema: request.schemaName,
@@ -129,7 +177,7 @@ export function createFakeBrowserAutomationProvider(
     role: "browserAutomation",
     async runTask(request: BrowserAutomationRequest): Promise<BrowserAutomationArtifact> {
       return {
-        artifactPath: artifactPathFromRequest(request, "browser-automation", name),
+        artifactPath: artifactPathFromRequest(request, "browser-automation", name, "json"),
         objective: request.objective,
         provider: name,
         transcript: [`Open ${request.url}`, `Objective: ${request.objective}`, "Fake run complete"],
@@ -155,7 +203,7 @@ export function createFakeEscalationProvider(
           : "manual_review";
 
       return {
-        artifactPath: artifactPathFromRequest(request, "escalation", name),
+        artifactPath: artifactPathFromRequest(request, "escalation", name, "json"),
         escalated: name !== "none",
         nextAction,
         provider: name,

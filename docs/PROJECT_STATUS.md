@@ -6,7 +6,7 @@ Build a local-first TypeScript monorepo that ingests estate-agent websites from 
 
 ## Current phase
 
-Ticket `008` is next up to build the crawl, fetch, and render pipeline on top of the normalized source-registry baseline delivered in Ticket `007`.
+Ticket `008` is in progress to build the crawl, fetch, and render pipeline on top of the normalized source-registry baseline delivered in Ticket `007`.
 
 ## Current active ticket ID
 
@@ -14,7 +14,7 @@ Ticket `008` is next up to build the crawl, fetch, and render pipeline on top of
 
 ## Current active ticket status
 
-`not_started`
+`in_progress`
 
 ## Summary of last completed work
 
@@ -26,9 +26,9 @@ Completed Ticket `007` by adding deterministic source-registry ingestion, preser
 
 ## Exact next recommended action
 
-1. Start Ticket `008` by reusing the normalized `source_registry` rows as crawl inputs and keeping run/artifact capture aligned with the existing local ledger.
-2. Build the smallest end-to-end fetch/render slice that records replayable artifacts on disk plus Postgres metadata for success and failure cases.
-3. Keep provider-specific behavior behind the existing provider registry and validate with targeted database/artifact checks before broadening to discovery logic.
+1. Build from the new Ticket `008` smoke slice by swapping the fixture URL/input over to real `source_registry` rows while keeping the existing run manifest and diagnostics contract intact.
+2. Extend the fetch pipeline from synthetic providers to the first real live-provider path only after the same artifact and failure metadata remain replayable.
+3. Keep provider-specific behavior behind the existing provider registry and validate with targeted crawl/artifact checks before broadening to discovery logic.
 
 ## Next-session routing
 
@@ -40,7 +40,7 @@ The next agent should continue `008-crawl-fetch-and-render-pipeline-foundation.m
 
 ## Last updated timestamp
 
-2026-03-20T07:32:00Z
+2026-03-20T14:35:00Z
 
 ## Source-of-truth note
 

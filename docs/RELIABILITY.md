@@ -25,11 +25,14 @@ Every run should record:
 - provider used
 - domain
 - page URL
+- fetch mode
 - extraction path
 - artifact file paths
 - run status
 - error class
 - elapsed time
+
+Ticket `008` smoke runs also emit a diagnostics JSON artifact with one entry per static/render fetch attempt so partial failures remain replayable even when only part of the pipeline succeeds.
 
 ## Database retention notes
 
