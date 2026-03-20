@@ -6,11 +6,11 @@ Build a local-first TypeScript monorepo that ingests estate-agent websites from 
 
 ## Current phase
 
-Ticket `007` is next up to ingest the raw estate-agent CSV into the normalized source registry on top of the provider/config baseline.
+Ticket `008` is next up to build the crawl, fetch, and render pipeline on top of the normalized source-registry baseline delivered in Ticket `007`.
 
 ## Current active ticket ID
 
-`007`
+`008`
 
 ## Current active ticket status
 
@@ -18,7 +18,7 @@ Ticket `007` is next up to ingest the raw estate-agent CSV into the normalized s
 
 ## Summary of last completed work
 
-Completed Ticket `006` by stabilizing the internal provider role interfaces, adding env-driven provider/runtime resolution, exposing registry summaries in the CLI, and documenting the fake-by-default local execution contract.
+Completed Ticket `007` by adding deterministic source-registry ingestion, preserving raw-row provenance in Postgres, emitting ingest reports for unresolved discovery-only rows, and validating the live import path against local Postgres.
 
 ## Summary of current blockers
 
@@ -26,13 +26,13 @@ Completed Ticket `006` by stabilizing the internal provider role interfaces, add
 
 ## Exact next recommended action
 
-1. Start Ticket `007` by loading `data/seeds/estate-agents.csv` into the normalized source-registry contract and preserving raw-row provenance.
-2. Reuse the new provider/config registry for any crawl or discovery defaults needed during source ingestion, but keep the ticket focused on registry normalization rather than live fetch behavior.
-3. Preserve the local evidence split: artifact files on disk, replay metadata in Postgres, and deterministic helpers as the only path generator.
+1. Start Ticket `008` by reusing the normalized `source_registry` rows as crawl inputs and keeping run/artifact capture aligned with the existing local ledger.
+2. Build the smallest end-to-end fetch/render slice that records replayable artifacts on disk plus Postgres metadata for success and failure cases.
+3. Keep provider-specific behavior behind the existing provider registry and validate with targeted database/artifact checks before broadening to discovery logic.
 
 ## Next-session routing
 
-The next agent should continue `007-source-registry-ingestion-and-normalization.md`.
+The next agent should continue `008-crawl-fetch-and-render-pipeline-foundation.md`.
 
 ## Required human actions
 
@@ -40,7 +40,7 @@ The next agent should continue `007-source-registry-ingestion-and-normalization.
 
 ## Last updated timestamp
 
-2026-03-20T05:29:46Z
+2026-03-20T07:32:00Z
 
 ## Source-of-truth note
 

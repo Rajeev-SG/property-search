@@ -13,6 +13,7 @@
     "db:status": "node --import tsx ./src/index.ts db status",
     "db:verify": "node --import tsx ./src/index.ts db verify",
     "artifacts:smoke": "node --import tsx ./src/index.ts artifacts smoke",
+    "sources:ingest": "node --import tsx ./src/index.ts sources ingest",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {

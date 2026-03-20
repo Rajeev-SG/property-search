@@ -35,6 +35,8 @@ Examples of columns present in the real file include:
 
 The product should normalize the raw seed into an internal source-registry contract as documented in `docs/product-specs/source-registry.md`.
 
+Rows that still lack a crawlable `website_url` or `canonical_url` remain part of the raw seed contract. The Ticket `007` importer records those unresolved rows in an ingest report under `artifacts/source-registry/ingests/` instead of silently dropping them.
+
 ## Supporting seed files
 
 - `status_synonyms.csv`

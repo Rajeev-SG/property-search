@@ -5,6 +5,7 @@ import {
 } from "@property-search/crawl";
 import {
   applyMigrations,
+  importSourceRegistry,
   runArtifactStorageSmoke,
   printMigrationStatus,
   listPlans,
@@ -85,6 +86,22 @@ artifactsCommand
   .action(async (options: { persistDb?: boolean }) => {
     await runArtifactStorageSmoke({
       persistToDatabase: Boolean(options.persistDb)
+    });
+  });
+
+const sourcesCommand = program
+  .command("sources")
+  .description("Source-registry ingestion helpers");
+
+sourcesCommand
+  .command("ingest")
+  .description("Normalize the checked-in seed CSV into source_registry rows")
+  .option("--seed-path <path>", "Override the seed CSV path")
+  .option("--dry-run", "Parse and normalize rows without writing to Postgres")
+  .action(async (options: { dryRun?: boolean; seedPath?: string }) => {
+    await importSourceRegistry({
+      dryRun: Boolean(options.dryRun),
+      seedPath: options.seedPath
     });
   });
 

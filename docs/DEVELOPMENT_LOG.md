@@ -668,3 +668,61 @@ Block reason:
 - `gh pr view` reported the PR as mergeable with no blocking reviews.
 - `gh pr checks --required` reported no required checks on the branch.
 - Review-thread inspection returned no unresolved review threads.
+
+## 2026-03-20 — Ticket 007 source-registry importer
+
+### What changed
+
+- Added a deterministic source-registry importer in `packages/harness/src/sourceRegistry.ts`.
+- Added CLI and root-script entrypoints for source-registry ingestion.
+- Normalized crawlable rows from `data/seeds/estate-agents.csv` into the existing `source_registry` contract while preserving the full raw row in `raw_payload`.
+- Recorded upstream evidence and derivation notes in `provenance_summary`, including source names, source IDs, portal profile URLs, and URL/domain derivation behavior.
+- Added an ingest report under `artifacts/source-registry/ingests/...` so discovery-only rows without a crawlable site URL remain traceable with a stable skip reason instead of being silently dropped.
+- Added a checked-in source-registry fixture and tests for quoted CSV parsing, duplicate-domain branch handling, derived domains, and unresolved rows.
+- Updated the source-registry and seed docs to document the importer behavior and skip-report policy.
+
+### Validation performed
+
+- Ran `pnpm run doctor`.
+- Ran `pnpm validate:fixture`.
+- Ran `pnpm typecheck`.
+- Ran `pnpm run typecheck:workspace`.
+- Ran `pnpm test`.
+- Ran `pnpm run smoke:cli`.
+- Ran `pnpm source-registry:ingest -- --dry-run`.
+
+### Blockers
+
+- Live Postgres validation is still pending because `postgres://postgres:postgres@localhost:5432/property_search` timed out from this workspace.
+- `docker compose up -d`, `docker compose ps`, and `docker ps` did not return usable output in this session, so the local database could not be brought up for the final import/inspection step.
+
+### Next follow-up
+
+- Restore local Docker/Postgres availability.
+- Run `pnpm db:migrate`.
+- Run `pnpm source-registry:ingest`.
+- Inspect stored `source_registry` rows and the generated ingest report, then continue the unattended git/PR flow.
+
+## 2026-03-20 — Ticket 007 live import validation
+
+### What changed
+
+- Recovered the local OrbStack Docker runtime after the API socket stalled during the first validation attempt.
+- Started the local Postgres service for the current workspace, applied the checked-in migrations, and ran the live `pnpm source-registry:ingest` path against `data/seeds/estate-agents.csv`.
+- Verified that `source_registry` now contains 63 imported rows spanning 51 distinct domains, with `raw_payload` and `provenance_summary` populated on stored records.
+- Advanced the repo status files so Ticket `008` is the next execution target.
+
+### Validation performed
+
+- Ran `docker version`.
+- Ran `docker compose up -d postgres`.
+- Ran `pnpm db:migrate`.
+- Ran `pnpm source-registry:ingest`.
+- Queried Postgres directly to verify row counts and stored provenance fields in `source_registry`.
+- Ran `pnpm db:verify`.
+- Ran `pnpm test`.
+- Ran `pnpm typecheck`.
+
+### Blockers
+
+- No implementation blockers remain at the repo level.
