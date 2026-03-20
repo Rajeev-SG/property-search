@@ -139,7 +139,8 @@ Read in this order before implementation:
 - Start: if a ticket is in `Todo`, immediately move it to `In Progress` before making changes.
 - Execute: keep the ticket in `In Progress` while reproducing, implementing, validating, and updating docs.
 - Handoff: once scope is complete and validation is green, create or reuse the ticket branch, create a git commit with a precise message, push the ticket branch, and create or update the PR that corresponds to it.
-- Re-entry: if human review requests changes, the human should move the ticket back to `In Progress`, which makes it eligible for another unattended run.
+- Review loop: once a PR exists, inspect review comments, unresolved review threads, review state, and required checks; apply actionable fixes on the same branch; commit, push, and re-check until merge conditions are satisfied or the flow is blocked.
+- Re-entry: if a prior run stopped in `In Review`, a human may move the ticket back to `In Progress` after new information, changed permissions, or explicit review direction makes another unattended pass worthwhile.
 - Closure: move to `Done` only after merge is actually complete.
 - Blockers: if required secrets, auth, or external permissions are missing, leave the ticket in `In Progress`, record the blocker clearly, and stop.
 
@@ -150,8 +151,31 @@ Read in this order before implementation:
 - Start new ticket branches from the current remote default branch state.
 - Use precise commit messages with subject, what changed, why, and validation.
 - After pushing, create or update the PR for the ticket branch instead of creating multiple competing branches.
+- Reuse an existing PR for the branch if one already exists; do not create multiple PRs for the same ticket branch.
+- Gather PR review comments, review threads, review state, and required check status before deciding whether more fixes are needed.
+- Apply actionable feedback on the same branch, then commit, push, and re-check the same PR.
+- Merge only when required checks are green and no blocking review state remains.
 - If merge succeeds, request remote branch deletion as part of merge and let the terminal-state cleanup remove the isolated workspace.
-- If merge cannot complete automatically because checks, review requirements, or permissions block it, move the ticket to `In Review` and stop.
+- If merge cannot complete automatically because checks, review requirements, permissions, or another explicit blocker remain, move the ticket to `In Review` and stop with a precise blocker summary.
+
+## GitHub PR automation defaults
+
+- Prefer `gh` over manual GitHub web flows for PR lookup, creation, editing, review inspection, checks, and merge.
+- Verify GitHub auth before PR operations with `gh auth status`.
+- Detect the current ticket branch before PR work and keep using that branch for the entire unattended run.
+- Detect the repository default branch with `gh repo view --json defaultBranchRef --jq '.defaultBranchRef.name'` when you need an explicit PR base.
+- Look up an existing open PR for the current branch with `gh pr list --head "$CURRENT_BRANCH" --state open --json number,title,body,url,headRefName,baseRefName`.
+- If no open PR exists for the branch, create one with `gh pr create --head "$CURRENT_BRANCH" --base "$DEFAULT_BRANCH" --title "$PR_TITLE" --body-file "$PR_BODY_FILE"`.
+- If an open PR already exists, update it in place with `gh pr edit "$PR_NUMBER" --title "$PR_TITLE" --body-file "$PR_BODY_FILE"` when the title or body is stale.
+- Inspect PR state with `gh pr view "$PR_NUMBER" --json reviewDecision,reviews,comments,statusCheckRollup,mergeStateStatus,mergeable,title,body,url`.
+- Inspect required checks with `gh pr checks "$PR_NUMBER" --required --json name,bucket,state,workflow,link`.
+- Inspect unresolved review threads with `gh api graphql` against `repository.pullRequest.reviewThreads` so thread-level blockers are not missed.
+- Distinguish blocking feedback from non-blocking or informational comments where possible; do not churn on pure nits unless they block approval or merge.
+- For actionable feedback or failing checks, apply the smallest fix on the same branch, rerun the narrowest relevant validation, create a precise follow-up commit, push, and re-check the same PR.
+- Repeat the review and fix loop until merge conditions are satisfied or the flow is blocked by review, checks, auth, permissions, or another explicit non-automatable condition.
+- Merge with `gh pr merge "$PR_NUMBER" --delete-branch` only when required checks are green and no blocking review state remains. Use the repository-allowed merge strategy.
+- Move the Linear issue to `Done` only after merge succeeds.
+- If auth is missing, permissions are insufficient, required review remains unresolved, or checks cannot pass automatically, move the issue to `In Review` with a precise blocker summary that includes the PR URL and the exact blocking signals.
 
 ## Execution flow
 
@@ -163,11 +187,14 @@ Read in this order before implementation:
 6. Run the most relevant validation commands for the touched area.
 7. Update any stale docs, examples, setup instructions, workflow docs, status files, or harness metadata that became inaccurate because of the change.
 8. If the task is complete and validation is green, create or reuse the ticket branch and create a git commit with a precise message.
-9. Push the ticket branch and create or update the PR that corresponds to it.
-10. If merge can complete automatically, merge the PR, delete the remote branch as part of merge, and move the Linear issue to `Done`.
-11. If merge cannot complete automatically because checks, review requirements, or permissions still need human attention, move the issue to `In Review`, record the exact blocker or waiting state, and stop.
-12. If blocked by missing required access, or if a completed task cannot be committed or pushed, keep the ticket in `In Progress`, record the blocker clearly, and stop.
-13. Summarize completed work, evidence-backed progress, validation, final ticket state, blockers, and any unresolved risks.
+9. Push the ticket branch, detect whether a PR for that branch already exists, and create or update exactly one PR for it.
+10. Collect PR review comments, unresolved review threads, review state, mergeability, and required check status.
+11. If there is actionable PR feedback or a failing required check that can be addressed automatically, apply the smallest fix on the same branch, rerun the narrowest relevant validation, create a precise follow-up commit, push, and return to the previous step.
+12. Repeat the review and fix loop until merge conditions are satisfied or the flow is blocked by review, checks, auth, permissions, or another explicit non-automatable condition.
+13. Merge with `gh pr merge "$PR_NUMBER" --delete-branch` only when required checks are green and no blocking review state remains.
+14. If merge cannot complete automatically because review requirements, checks, auth, permissions, or another explicit blocker still need human attention, move the issue to `In Review`, record the exact blocker summary with the PR URL and blocking signals, and stop.
+15. Move the Linear issue to `Done` only after merge succeeds.
+16. Summarize completed work, evidence-backed progress, validation, final ticket state, blockers, and any unresolved risks.
 
 ## Default validation commands
 

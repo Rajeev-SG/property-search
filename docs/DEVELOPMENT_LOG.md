@@ -1,5 +1,45 @@
 # Development Log
 
+## 2026-03-20T02:15:00Z — GitHub PR automation workflow contract added
+
+### What changed
+
+- Expanded `WORKFLOW.md` so unattended Symphony ticket runs explicitly create or reuse one ticket branch, create or update exactly one PR for that branch, inspect PR feedback and required checks, apply same-branch fixes, and merge only when merge conditions are satisfied.
+- Added `docs/references/github-pr-automation.md` as the repo-local `gh` runbook for PR lookup, review-thread inspection, required checks, merge gating, and `In Review` blocker reporting.
+- Added `skills/pr-automation/SKILL.md` so future unattended runs can reuse the same PR automation lifecycle instead of rediscovering it.
+- Updated `AGENTS.md` and `README.md` to keep the repo-level guidance aligned with the workflow contract.
+- Added `tests/workflow-contract.test.ts` to lock the key PR automation requirements into the repo test suite.
+
+### Why it changed
+
+The unattended Symphony model for this repository is now branch and PR driven by default. The repository workflow needs to own PR creation, review/check gathering, same-branch fix loops, merge completion, and fallback `In Review` handling so Symphony can stay focused on orchestration and observability.
+
+### Files touched
+
+- `WORKFLOW.md`
+- `AGENTS.md`
+- `README.md`
+- `docs/references/github-pr-automation.md`
+- `skills/pr-automation/SKILL.md`
+- `tests/workflow-contract.test.ts`
+- `docs/DEVELOPMENT_LOG.md`
+
+### Validation performed
+
+- Ran `pnpm run doctor`.
+- Ran `pnpm typecheck`.
+- Ran `pnpm test -- tests/workflow-contract.test.ts`.
+
+### Validation results
+
+- `pnpm run doctor`: passed.
+- `pnpm typecheck`: passed.
+- `pnpm test -- tests/workflow-contract.test.ts`: passed. Under the current Vitest configuration this executed the full local test suite, including the new workflow-contract test.
+
+### Remaining external dependencies
+
+- The live `gh` PR creation, review-thread gathering, required-check inspection, and merge path was documented but not exercised in this session because it depends on GitHub auth, repository permissions, branch protection, and real PR/check state.
+
 ## 2026-03-20T01:52:01Z — Symphony workflow simplified around git-backed ticket branches
 
 ### What changed

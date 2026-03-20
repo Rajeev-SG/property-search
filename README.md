@@ -92,7 +92,7 @@ pnpm test
 
 Start from the active ticket recorded in `docs/PROJECT_STATUS.md`.
 
-At the time of writing, the active repo ticket is `002-monorepo-bootstrap-and-dev-ergonomics.md`.
+At the time of writing, the active repo ticket is `003-canonical-schema-and-domain-contract-expansion.md`.
 
 ## Commands
 
@@ -129,6 +129,8 @@ OpenRouter note:
 - `docs/exec-plans/active/` contains broad phase references.
 - `AGENTS.md` is intentionally short; deeper detail lives in the docs it links to.
 - The `skills/` folder is for Codex skills that should be reusable across tasks.
+- `skills/pr-automation/SKILL.md` documents the reusable unattended branch, PR, review-loop, and merge flow for Symphony ticket runs.
 - `docs/DEVELOPMENT_LOG.md` is append-only and should be updated whenever significant work is done.
-- Symphony ticket runs should use one branch per active ticket / PR, reuse that branch while review is open, and prefer merge plus remote branch deletion over piling up long-lived branches.
+- Symphony ticket runs should create or update exactly one PR for the active ticket branch, gather review comments, unresolved threads, and required checks with `gh`, apply actionable fixes on the same branch, and merge only when merge conditions are satisfied.
+- If auth, permissions, unresolved review, or failing required checks block automatic merge, the repository workflow should leave the ticket in `In Review` with a precise blocker summary instead of treating `In Review` as the happy path.
 - The repository workflow owns commit, push, PR, merge, and fallback review behavior; Symphony itself should remain the scheduler and observability surface.
