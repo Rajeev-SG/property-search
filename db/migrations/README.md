@@ -10,10 +10,11 @@ Deterministic SQL migrations for the local Postgres source-of-truth live here.
 
 ## Current baseline
 
-`001_pipeline_baseline.sql` creates the first core pipeline tables:
+`001_pipeline_baseline.sql` and `002_run_ledger_foundation.sql` create the current core pipeline tables:
 
 - `source_registry`
 - `site_profiles`
+- `ingestion_runs`
 - `raw_page_artifacts`
 - `extracted_listings`
 - `canonical_properties`

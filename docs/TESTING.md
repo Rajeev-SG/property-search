@@ -33,6 +33,10 @@ These are not required on every local edit, but they should be run whenever prov
 
 Use `pnpm db:smoke` when changing SQL migrations or schema verification logic. It creates a fresh temporary database, applies the checked-in migrations, verifies the expected core tables, and drops the temporary database again.
 
+## Artifact storage smoke tests
+
+Use `pnpm artifacts:smoke` when changing the run ledger or filesystem artifact layout. It creates a synthetic run manifest plus sample raw/rendered/extracted/diagnostic files under `artifacts/runs/` so naming and evidence capture can be inspected directly.
+
 ## Eval philosophy
 
 - gold examples live in the repo

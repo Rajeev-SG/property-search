@@ -1,3 +1,4 @@
+export * from "./artifacts.js";
 export * from "./database.js";
 export * from "./doctor.js";
 export * from "./plans.js";

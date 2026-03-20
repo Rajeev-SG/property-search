@@ -76,6 +76,7 @@ The repo should treat these as separate but related layers.
 
 ### Raw page record
 Stores:
+- run identifier
 - URL
 - provider
 - fetch mode
@@ -120,11 +121,17 @@ Stores:
 
 ```text
 artifacts/
-  raw/
-  rendered/
-  extracted/
-  screenshots/
   runs/
+    YYYY/
+      MM/
+        DD/
+          <run-id>/
+            raw/
+            rendered/
+            extracted/
+            screenshots/
+            diagnostics/
+            run.json
 ```
 
 ## Failure strategy
@@ -148,9 +155,10 @@ Ticket `004` establishes the first database baseline with these responsibilities
 
 - `source_registry`: normalized source rows derived from the raw CSV, including raw-row provenance and the retained raw payload
 - `site_profiles`: robots, sitemap, pagination, and profiling evidence per source
-- `raw_page_artifacts`: fetch metadata, crawl-policy metadata, provider request/response metadata, hashes, and filesystem artifact pointers
+- `ingestion_runs`: run-level metadata, artifact directory pointers, manifest paths, failure classes, and provider/URL scope for replayable execution traces
+- `raw_page_artifacts`: fetch metadata, crawl-policy metadata, provider request/response metadata, hashes, run linkage, and filesystem artifact pointers
 - `extracted_listings`: the validated extracted-listing contract plus evidence and extraction-path metadata
 - `canonical_properties`: the canonical-property contract plus dedupe/search-friendly scalar fields
 - `listing_property_links`: explicit listing-to-property linkage and match metadata for inspectable canonicalization
 
-The database stores pointers to local artifacts rather than large raw HTML or screenshot blobs. Raw evidence remains on disk under `artifacts/`.
+The database stores pointers to local artifacts rather than large raw HTML or screenshot blobs. Raw evidence remains on disk under `artifacts/runs/...`, with each run manifest linking back to the files created during that execution.

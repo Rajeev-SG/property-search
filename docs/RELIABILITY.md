@@ -21,16 +21,19 @@
 
 Every run should record:
 - run id
+- run manifest path
 - provider used
 - domain
 - page URL
 - extraction path
 - artifact file paths
+- run status
 - error class
 - elapsed time
 
 ## Database retention notes
 
-- Postgres stores metadata, hashes, crawl-policy signals, and filesystem paths to raw artifacts.
-- Raw HTML, rendered HTML, markdown, JSON payloads, and screenshots remain on disk under `artifacts/`.
+- Postgres stores run metadata, hashes, crawl-policy signals, and filesystem paths to raw artifacts.
+- `ingestion_runs` is the run ledger for local mode. It stores run status, provider, URL scope, manifest path, bucket directories, artifact listings, and failure metadata.
+- Raw HTML, rendered HTML, markdown, JSON payloads, screenshots, and diagnostic payloads remain on disk under `artifacts/runs/<yyyy>/<mm>/<dd>/<run-id>/`.
 - This split keeps the database replayable without embedding large opaque blobs in the core pipeline tables.
