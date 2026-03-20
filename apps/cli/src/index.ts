@@ -1,8 +1,11 @@
 import { Command } from "commander";
 import {
+  applyMigrations,
+  printMigrationStatus,
   listPlans,
   runDoctor,
-  validateSyntheticFixture
+  validateSyntheticFixture,
+  verifyDatabaseSchema
 } from "@property-search/harness";
 
 const program = new Command();
@@ -31,6 +34,31 @@ program
   .description("Validate the synthetic canonical listing fixture")
   .action(async () => {
     await validateSyntheticFixture();
+  });
+
+const dbCommand = program
+  .command("db")
+  .description("Database migration and schema helpers");
+
+dbCommand
+  .command("migrate")
+  .description("Apply deterministic SQL migrations to the local Postgres database")
+  .action(async () => {
+    await applyMigrations();
+  });
+
+dbCommand
+  .command("status")
+  .description("Show applied and pending database migrations")
+  .action(async () => {
+    await printMigrationStatus();
+  });
+
+dbCommand
+  .command("verify")
+  .description("Verify that the expected core pipeline tables exist")
+  .action(async () => {
+    await verifyDatabaseSchema();
   });
 
 await program.parseAsync(process.argv);

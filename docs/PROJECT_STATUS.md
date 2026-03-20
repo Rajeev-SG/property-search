@@ -6,7 +6,7 @@ Build a local-first TypeScript monorepo that ingests estate-agent websites from 
 
 ## Current phase
 
-Ticket `003` is complete and handed off. The repo is ready to start Ticket `004` for the database schema and migration baseline.
+Ticket `004` is in progress to establish the initial Postgres schema and deterministic migration flow for the core pipeline records.
 
 ## Current active ticket ID
 
@@ -14,7 +14,7 @@ Ticket `003` is complete and handed off. The repo is ready to start Ticket `004`
 
 ## Current active ticket status
 
-`not_started`
+`in_progress`
 
 ## Summary of last completed work
 
@@ -26,13 +26,13 @@ Completed Ticket `003` by splitting the overloaded property contract into explic
 
 ## Exact next recommended action
 
-1. Start Ticket `004` to establish the initial Postgres schema and migration flow for core pipeline records.
-2. Keep the domain-contract fixtures and validation commands green while adding the database baseline.
+1. Finish Ticket `004` by validating the migration runner, baseline tables, and schema smoke checks against local Postgres.
+2. Keep the domain-contract fixtures and validation commands green while landing the database baseline.
 3. Preserve lineage, evidence, and canonical/search boundary semantics introduced in Ticket `003`.
 
 ## Next-session routing
 
-The next agent should start `004-database-schema-and-migration-baseline.md`.
+The next agent should continue `004-database-schema-and-migration-baseline.md`.
 
 ## Required human actions
 
@@ -40,7 +40,7 @@ The next agent should start `004-database-schema-and-migration-baseline.md`.
 
 ## Last updated timestamp
 
-2026-03-20T03:18:00Z
+2026-03-20T04:30:00Z
 
 ## Source-of-truth note
 

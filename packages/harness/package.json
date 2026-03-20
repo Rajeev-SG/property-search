@@ -10,6 +10,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@property-search/domain": "workspace:*"
+    "@property-search/domain": "workspace:*",
+    "pg": "^8.20.0"
   }
 }
