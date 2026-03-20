@@ -1,5 +1,27 @@
 # Development Log
 
+## 2026-03-20T03:45:00Z — Unattended handoff guardrails hardened
+
+### What changed
+
+- Added `.github/pull_request_template.md` so unattended PRs have a concrete body structure instead of free-form summaries.
+- Updated `WORKFLOW.md`, `AGENTS.md`, and `README.md` so the repo contract explicitly requires the PR template and a final Linear completion comment after merge.
+- Expanded `tests/workflow-contract.test.ts` so the template and final-comment requirements stay locked into the repo contract.
+
+### Why it changed
+
+- A live unattended run merged a PR before checks had settled, left a vague PR body, and closed the Linear issue without a final completion comment. The repo contract now has a concrete template and explicit final-comment requirement so the hardened Symphony runtime can enforce the intended handoff flow.
+
+### Files touched
+
+- `.gitignore`
+- `.github/pull_request_template.md`
+- `WORKFLOW.md`
+- `AGENTS.md`
+- `README.md`
+- `tests/workflow-contract.test.ts`
+- `docs/DEVELOPMENT_LOG.md`
+
 ## 2026-03-20T02:30:00Z — Live PR automation smoke validation
 
 ### What changed

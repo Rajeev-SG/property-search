@@ -10,9 +10,11 @@ describe("workflow contract", () => {
     const workflow = readRepoFile("WORKFLOW.md");
 
     expect(workflow).toContain("create or update exactly one PR");
+    expect(workflow).toContain(".github/pull_request_template.md");
     expect(workflow).toContain("Collect PR review comments, unresolved review threads, review state, mergeability, and required check status.");
     expect(workflow).toContain("apply the smallest fix on the same branch");
     expect(workflow).toContain("gh pr merge \"$PR_NUMBER\" --delete-branch");
+    expect(workflow).toContain("post a final Linear comment");
     expect(workflow).toContain("Move the Linear issue to `Done` only after merge succeeds.");
     expect(workflow).toContain("move the issue to `In Review`, record the exact blocker summary with the PR URL and blocking signals, and stop.");
   });
@@ -29,6 +31,8 @@ describe("workflow contract", () => {
     expect(runbook).toContain("gh api graphql");
     expect(runbook).toContain("gh pr merge \"$PR_NUMBER\" --delete-branch");
     expect(readme).toContain("skills/pr-automation/SKILL.md");
+    expect(readme).toContain(".github/pull_request_template.md");
     expect(agents).toContain("Gather PR review comments, unresolved review threads, review state, and required checks before deciding whether the work is ready to merge.");
+    expect(agents).toContain("final Linear comment");
   });
 });
