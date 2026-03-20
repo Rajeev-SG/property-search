@@ -11,10 +11,12 @@
 ## CI gates
 
 At minimum:
-- typecheck
-- doctor
-- synthetic fixture validation
-- vitest
+- `pnpm run doctor`
+- `pnpm validate:fixture`
+- `pnpm typecheck`
+- `pnpm run typecheck:workspace`
+- `pnpm test`
+- `pnpm run smoke:cli` when CLI/package wiring changes
 
 ## External vendor smoke tests
 

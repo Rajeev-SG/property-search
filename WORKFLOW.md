@@ -22,12 +22,15 @@ hooks:
     if [ -n "$REPO_URL" ]; then
       git clone --depth 1 "$REPO_URL" .
     else
-      rsync -a --delete \
-        --exclude='.git' \
-        --exclude='node_modules' \
-        --exclude='artifacts' \
-        --exclude='.turbo' \
-        "$SOURCE_PATH"/ ./
+      if [ -d "$SOURCE_PATH/.git" ]; then
+        git clone "$SOURCE_PATH" .
+      else
+        rsync -a --delete \
+          --exclude='node_modules' \
+          --exclude='artifacts' \
+          --exclude='.turbo' \
+          "$SOURCE_PATH"/ ./
+      fi
     fi
     if [ -f "$SOURCE_PATH/.env" ]; then
       cp "$SOURCE_PATH/.env" .env
@@ -36,7 +39,7 @@ hooks:
     fi
     pnpm install --frozen-lockfile
     docker compose up -d
-    pnpm doctor
+    pnpm run doctor
   before_remove: |
     docker compose down --remove-orphans || true
 agent:
@@ -151,7 +154,7 @@ Read in this order before implementation:
 
 Use the narrowest relevant set first, then broaden if needed:
 
-- `pnpm doctor`
+- `pnpm run doctor`
 - `pnpm typecheck`
 - `pnpm test`
 - `pnpm validate:fixture`
@@ -164,7 +167,7 @@ For significant implementation work, prefer to include both `pnpm test` and `pnp
 
 - Dependencies are installed with `pnpm install --frozen-lockfile`.
 - Local services start with `docker compose up -d`.
-- Repo readiness is checked with `pnpm doctor`.
+- Repo readiness is checked with `pnpm run doctor`.
 - Repo bootstrap defaults to the local source path `/Users/rajeev/Code/property-search`.
 - `PROPERTY_SEARCH_REPO_URL` is an optional override for cloning from a remote instead.
 - The long-term raw source input contract is `data/seeds/estate-agents.csv`.

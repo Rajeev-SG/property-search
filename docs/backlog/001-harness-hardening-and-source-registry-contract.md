@@ -41,14 +41,14 @@
 ## Acceptance criteria
 
 - The repo clearly documents the difference between raw source input and normalized internal source-registry records.
-- `pnpm doctor` verifies the repaired harness/status files relevant to agent-first continuation.
+- `pnpm run doctor` verifies the repaired harness/status files relevant to agent-first continuation.
 - No root or seed doc still implies that the simplified example CSV is the only supported source shape.
 - The next clean agent can determine, from repo docs alone, how source-registry work should begin.
 - Any remaining human decision is explicitly documented in `docs/PROJECT_STATUS.md`.
 
 ## Test plan
 
-- Run `pnpm doctor`.
+- Run `pnpm run doctor`.
 - Run `pnpm typecheck`.
 - Run `pnpm test`.
 - Manually verify that `README.md`, `data/seeds/README.md`, and `docs/product-specs/source-registry.md` tell the same story.

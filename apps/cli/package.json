@@ -1,0 +1,17 @@
+{
+  "name": "@property-search/cli",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node --import tsx ./src/index.ts",
+    "doctor": "node --import tsx ./src/index.ts doctor",
+    "plans": "node --import tsx ./src/index.ts plans",
+    "validate-fixture": "node --import tsx ./src/index.ts validate-fixture",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@property-search/harness": "workspace:*",
+    "commander": "14.0.3"
+  }
+}

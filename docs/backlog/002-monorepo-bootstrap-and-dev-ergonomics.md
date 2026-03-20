@@ -48,8 +48,8 @@
 
 ## Test plan
 
-- Run `pnpm install` if dependencies are not present.
-- Run `pnpm doctor`.
+- Run `pnpm install --frozen-lockfile` if dependencies are not present.
+- Run `pnpm run doctor`.
 - Run `pnpm typecheck`.
 - Run `pnpm test`.
 - Run any newly added package or CLI smoke checks.
@@ -79,4 +79,4 @@
 
 ## Human instructions (if any)
 
-- Run `pnpm install` if it has not already been run in the repo.
+- Run `pnpm install --frozen-lockfile` if it has not already been run in the repo.

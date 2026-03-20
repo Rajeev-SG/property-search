@@ -1,0 +1,7 @@
+{
+  "name": "@property-search/index",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Reserved workspace package for search indexing logic."
+}

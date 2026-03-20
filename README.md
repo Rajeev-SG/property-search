@@ -81,26 +81,28 @@ Explicitly excluded for now:
 ## Suggested first-run sequence
 
 ```bash
-pnpm install
+pnpm install --frozen-lockfile
 docker compose up -d
-pnpm doctor
+pnpm run doctor
 pnpm validate:fixture
 pnpm test
 ```
 
 ## Recommended next implementation move
 
-Start Ticket `001` in `docs/backlog/001-harness-hardening-and-source-registry-contract.md`.
+Start from the active ticket recorded in `docs/PROJECT_STATUS.md`.
 
-That ticket reconciles the real seed CSV shape with the normalized internal source-registry contract and hardens the harness checks for future work.
+At the time of writing, the active repo ticket is `002-monorepo-bootstrap-and-dev-ergonomics.md`.
 
 ## Commands
 
-- `pnpm doctor` — validate required repo files and harness readiness
+- `pnpm run doctor` — validate required repo files and harness readiness
 - `pnpm plans:list` — list broad execution plans
 - `pnpm validate:fixture` — validate the synthetic canonical fixture
 - `pnpm test` — run tests
 - `pnpm typecheck` — run TypeScript no-emit checks
+- `pnpm run typecheck:workspace` — run package-level typechecks across the workspace
+- `pnpm run smoke:cli` — run the CLI `doctor` command through the workspace package entrypoint
 - `pnpm smoke:vendors` — run repo vendor smoke tests for OpenRouter, Firecrawl, Cloudflare, and Bright Data
 - `pnpm smoke:browser-use` — run the browser-use smoke test against OpenRouter GLM-5
 

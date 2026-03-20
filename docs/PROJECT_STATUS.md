@@ -6,11 +6,11 @@ Build a local-first TypeScript monorepo that ingests estate-agent websites from 
 
 ## Current phase
 
-Harness repaired and delivery backlog generated. Product implementation tickets have not started yet.
+Monorepo bootstrap is complete. The repo is ready to start Ticket `003` for canonical schema and domain contract expansion.
 
 ## Current active ticket ID
 
-`002`
+`003`
 
 ## Current active ticket status
 
@@ -18,29 +18,30 @@ Harness repaired and delivery backlog generated. Product implementation tickets 
 
 ## Summary of last completed work
 
-Confirmed that the enriched checked-in `data/seeds/estate-agents.csv` is the long-term raw repo input contract, confirmed external service API keys are present in `.env`, and closed Ticket `001` because the harness/docs already satisfy its acceptance criteria.
+Completed Ticket `002` by hardening workspace/package boundaries, root validation commands, CLI/package wiring, and CI so future implementation work can build on a stable monorepo scaffold.
 
 ## Summary of current blockers
 
-- No current harness blockers are recorded.
+- No current blockers are recorded.
 
 ## Exact next recommended action
 
-1. Start Ticket `002` to harden workspace/package configuration, root validation commands, and CI.
+1. Start Ticket `003` to expand the canonical schema and domain contracts needed for extraction, normalization, dedupe, and indexing.
 2. Run `docker compose up -d` before infra-dependent implementation work.
-3. Rerun `pnpm smoke:vendors` when provider-facing harness logic changes again.
+3. Keep the validation baseline from Ticket `002` green as new package code is added.
 
 ## Next-session routing
 
-The next agent should start the active ticket, which is also the next queued ticket: `002-monorepo-bootstrap-and-dev-ergonomics.md`.
+The next agent should start `003-canonical-schema-and-domain-contract-expansion.md`.
 
 ## Required human actions
 
+- No human action is required for repo code changes.
 - Run `docker compose up -d` before infra-dependent implementation tickets.
 
 ## Last updated timestamp
 
-2026-03-19T22:17:00Z
+2026-03-20T00:56:00Z
 
 ## Source-of-truth note
 

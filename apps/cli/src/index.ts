@@ -1,7 +1,9 @@
 import { Command } from "commander";
-import { runDoctor } from "../../../scripts/doctor.js";
-import { listPlans } from "../../../scripts/list-plans.js";
-import { validateSyntheticFixture } from "../../../scripts/validate-synthetic-fixture.js";
+import {
+  listPlans,
+  runDoctor,
+  validateSyntheticFixture
+} from "@property-search/harness";
 
 const program = new Command();
 

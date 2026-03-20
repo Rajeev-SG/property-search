@@ -12,7 +12,7 @@ Create a runnable local repository shell with docs, local infra, schema package,
 - repo docs
 
 ## Acceptance criteria
-- `pnpm install` succeeds
+- `pnpm install --frozen-lockfile` succeeds
 - `docker compose up -d` starts local services
-- `pnpm doctor` runs
+- `pnpm run doctor` runs
 - `pnpm test` runs

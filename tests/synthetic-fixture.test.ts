@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { canonicalPropertySchema } from "../packages/domain/src/canonicalProperty.js";
+import { canonicalPropertySchema } from "@property-search/domain";
 
 describe("synthetic canonical fixture", () => {
   it("validates against the canonical schema", () => {

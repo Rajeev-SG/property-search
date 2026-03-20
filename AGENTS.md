@@ -51,11 +51,13 @@ A feature is only done when:
 
 ## Commands
 
-- `pnpm doctor` — validate local repo prerequisites
+- `pnpm run doctor` — validate local repo prerequisites
 - `pnpm plans:list` — list execution plans
 - `pnpm validate:fixture` — validate synthetic canonical JSON fixture
 - `pnpm test` — run tests
 - `pnpm typecheck` — TypeScript no-emit check
+- `pnpm run typecheck:workspace` — package-level workspace typecheck
+- `pnpm run smoke:cli` — validate the CLI workspace entrypoint
 - `pnpm smoke:vendors` — validate OpenRouter, Firecrawl, Cloudflare, and Bright Data access
 - `pnpm smoke:browser-use` — validate browser-use with OpenRouter `glm-5`
 
