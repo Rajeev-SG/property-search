@@ -1,5 +1,19 @@
 # Development Log
 
+## 2026-03-20T02:30:00Z — Live PR automation smoke validation
+
+### What changed
+
+- Added a minimal development-log entry on a dedicated validation branch so the unattended GitHub PR automation flow can be exercised against a real PR without changing product behavior.
+
+### Why it changed
+
+- The repository now has an explicit branch, PR, review-loop, and merge contract. This smoke step validates that the documented `gh`-based PR flow can be executed end-to-end against the live repository.
+
+### Files touched
+
+- `docs/DEVELOPMENT_LOG.md`
+
 ## 2026-03-20T02:15:00Z — GitHub PR automation workflow contract added
 
 ### What changed
