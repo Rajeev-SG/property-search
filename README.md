@@ -124,7 +124,7 @@ pnpm test
 
 Start from the active ticket recorded in `docs/PROJECT_STATUS.md`.
 
-At the time of writing, the next repo ticket is `007-source-registry-ingestion-and-normalization.md`.
+At the time of writing, the next repo ticket is `008-crawl-fetch-and-render-pipeline-foundation.md`.
 
 ## Commands
 
@@ -135,6 +135,7 @@ At the time of writing, the next repo ticket is `007-source-registry-ingestion-a
 - `pnpm db:verify` — verify the expected core pipeline tables exist
 - `pnpm db:smoke` — create a fresh temporary database, apply migrations, and verify the baseline schema
 - `pnpm artifacts:smoke` — create a synthetic local run plus manifest under `artifacts/runs/`
+- `pnpm source-registry:ingest -- --dry-run` — normalize the seed CSV, print import/skip counts, and write the full ingest report under `artifacts/source-registry/ingests/`
 - `pnpm plans:list` — list broad execution plans
 - `pnpm validate:fixture` — validate the synthetic extracted-listing, canonical-property, and search-document fixtures
 - `pnpm test` — run tests
@@ -173,3 +174,9 @@ OpenRouter note:
 - After merge succeeds, the unattended handoff should leave a final Linear comment with the merged PR URL plus the validation/check snapshot used for completion.
 - If auth, permissions, unresolved review, or failing required checks block automatic merge, the repository workflow should leave the ticket in `In Review` with a precise blocker summary instead of treating `In Review` as the happy path.
 - The repository workflow owns commit, push, PR, merge, and fallback review behavior; Symphony itself should remain the scheduler and observability surface.
+
+## Source-registry ingestion notes
+
+- Ticket `007` adds a deterministic seed importer that upserts only crawlable source rows into `source_registry`.
+- The importer preserves the full CSV row in `raw_payload`, records derivation and upstream evidence in `provenance_summary`, and keeps duplicate-domain branch rows distinct by raw row number.
+- Discovery-only rows that still lack a site URL are surfaced in the generated ingest report with a stable skip reason so they can be revisited without losing evidence.

@@ -1,6 +1,6 @@
 # Ticket Index
 
-Current active ticket: `007`.
+Current active ticket: `008`.
 
 | Order | Ticket ID | Title | Status | Dependency IDs | Priority | Objective | Ticket file | Active |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -10,8 +10,8 @@ Current active ticket: `007`.
 | 4 | `004` | Database schema and migration baseline | `done` | `002`, `003` | High | Establish the initial Postgres schema and migration flow for core pipeline records. | `docs/backlog/004-database-schema-and-migration-baseline.md` | `no` |
 | 5 | `005` | Run ledger and local artifact storage foundation | `done` | `003`, `004` | High | Implement deterministic local artifact persistence and run metadata capture. | `docs/backlog/005-run-ledger-and-local-artifact-storage-foundation.md` | `no` |
 | 6 | `006` | Provider abstraction and config wiring | `done` | `002`, `003`, `005` | High | Define stable crawl/render/extraction provider interfaces and env-driven defaults. | `docs/backlog/006-provider-abstraction-and-config-wiring.md` | `no` |
-| 7 | `007` | Source-registry ingestion and normalization | `not_started` | `001`, `003`, `004`, `006` | High | Ingest the raw seed CSV into normalized source-registry records with provenance preserved. | `docs/backlog/007-source-registry-ingestion-and-normalization.md` | `yes` |
-| 8 | `008` | Crawl, fetch, and render pipeline foundation | `not_started` | `005`, `006`, `007` | High | Implement the local fetch/render pipeline and persist replayable artifacts and failures. | `docs/backlog/008-crawl-fetch-and-render-pipeline-foundation.md` | `no` |
+| 7 | `007` | Source-registry ingestion and normalization | `done` | `001`, `003`, `004`, `006` | High | Ingest the raw seed CSV into normalized source-registry records with provenance preserved. | `docs/backlog/007-source-registry-ingestion-and-normalization.md` | `no` |
+| 8 | `008` | Crawl, fetch, and render pipeline foundation | `not_started` | `005`, `006`, `007` | High | Implement the local fetch/render pipeline and persist replayable artifacts and failures. | `docs/backlog/008-crawl-fetch-and-render-pipeline-foundation.md` | `yes` |
 | 9 | `009` | Site profiling and discovery | `not_started` | `007`, `008` | High | Produce reusable site profiles with robots, sitemap, page classification, and pagination evidence. | `docs/backlog/009-site-profiling-and-discovery.md` | `no` |
 | 10 | `010` | Deterministic extraction ladder core | `not_started` | `003`, `005`, `008`, `009` | High | Implement structured-data, script/blob, and DOM extraction with field-level evidence. | `docs/backlog/010-deterministic-extraction-ladder-core.md` | `no` |
 | 11 | `011` | Schema-constrained LLM extraction fallback | `not_started` | `006`, `010` | Medium | Add a replayable schema-constrained LLM fallback path when deterministic extraction is insufficient. | `docs/backlog/011-schema-constrained-llm-extraction-fallback.md` | `no` |

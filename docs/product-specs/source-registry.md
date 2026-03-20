@@ -79,6 +79,15 @@ Minimum normalized fields for implementation:
 - Allow multiple raw rows to point at the same domain while still preserving branch-level metadata.
 - Keep the internal contract stable even if upstream seed exports evolve.
 
+## Importer behavior for Ticket `007`
+
+- The importer reads `data/seeds/estate-agents.csv` as a raw discovery feed and normalizes only rows that expose a resolvable `website_url` or `canonical_url`.
+- `homepage_url` is derived from the resolved site URL origin, while `start_url` preserves the most specific crawlable row URL (`website_url` first, `canonical_url` second).
+- `website_domain` comes from the raw `website_domain` column when present; otherwise it is derived from the resolved URL hostname.
+- Every imported row keeps the full raw CSV payload in `raw_payload` and records seed evidence plus derivation notes in `provenance_summary`.
+- Multiple rows may share the same `website_domain`; branch-level rows still persist independently because uniqueness is keyed to the raw input path and row number.
+- Rows that still only contain discovery evidence, portal links, or map identifiers and do not expose a crawlable site URL are not inserted into `source_registry`. They are recorded in the ingest report under `artifacts/source-registry/ingests/...` with the raw row and a stable skip reason so they remain inspectable.
+
 ## Relationship to downstream pipeline
 
 The normalized source registry feeds:
