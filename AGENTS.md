@@ -77,6 +77,16 @@ A feature is only done when:
 6. update status files and stale docs
 7. commit with a precise message
 
+## Review guidelines
+
+- Treat regressions in evidence capture, canonical schema handling, crawl-policy handling, and fixture integrity as high-severity review findings.
+- Flag any change that skips docs, fixtures/evals, or validation required by the touched scope.
+- Flag any change that claims completion without tests or without clearly stating validation gaps.
+- Flag any change that introduces provider-specific logic before deterministic extraction options are exhausted, unless the ticket explicitly requires it.
+- Flag any change that stores artifacts outside `artifacts/` or weakens provenance recording.
+- Flag any change that modifies repo workflow, harness behavior, or ticket/state handling without updating the corresponding docs.
+- Flag unrelated refactors, dependency churn, or broad rewrites outside the active ticket scope.
+
 ## Tooling policy
 
 Read `docs/cli-tools.md` and prefer tools that are already available in this environment.
