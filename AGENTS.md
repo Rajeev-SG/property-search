@@ -147,6 +147,8 @@ If a task needs a CLI or MCP tool that is not listed in `docs/cli-tools.md`, say
 - When a task is fully completed and validated, create a git commit with a concise, helpful message.
 - Do not commit partial, broken, or unvalidated work.
 - If a commit is not possible, say why.
+- For unattended Symphony work, use one branch per active ticket / PR and reuse it while the PR remains open.
+- Prefer finishing the automated flow with PR merge plus remote branch deletion; use `In Review` only when merge cannot complete automatically.
 
 ## Documentation and harness maintenance
 

@@ -128,3 +128,5 @@ OpenRouter note:
 - `AGENTS.md` is intentionally short; deeper detail lives in the docs it links to.
 - The `skills/` folder is for Codex skills that should be reusable across tasks.
 - `docs/DEVELOPMENT_LOG.md` is append-only and should be updated whenever significant work is done.
+- Symphony ticket runs should use one branch per active ticket / PR, reuse that branch while review is open, and prefer merge plus remote branch deletion over piling up long-lived branches.
+- The repository workflow owns commit, push, PR, merge, and fallback review behavior; Symphony itself should remain the scheduler and observability surface.

@@ -21,6 +21,17 @@ hooks:
     SOURCE_PATH="${PROPERTY_SEARCH_SOURCE_PATH:-/Users/rajeev/Code/property-search}"
     if [ -n "$REPO_URL" ]; then
       git clone --depth 1 "$REPO_URL" .
+    elif [ -d "$SOURCE_PATH/.git" ]; then
+      SOURCE_REMOTE_URL="$(git -C "$SOURCE_PATH" remote get-url origin 2>/dev/null || true)"
+      SOURCE_BRANCH="$(git -C "$SOURCE_PATH" symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
+      git clone --no-local "$SOURCE_PATH" .
+      if [ -n "$SOURCE_REMOTE_URL" ]; then
+        git remote set-url origin "$SOURCE_REMOTE_URL"
+        git fetch origin --prune
+        if [ -n "$SOURCE_BRANCH" ] && git show-ref --verify --quiet "refs/remotes/origin/$SOURCE_BRANCH"; then
+          git checkout -B "$SOURCE_BRANCH" "origin/$SOURCE_BRANCH"
+        fi
+      fi
     else
       rsync -a --delete \
         --exclude='.git' \
@@ -43,7 +54,7 @@ agent:
   max_concurrent_agents: 1
   max_turns: 30
 codex:
-  command: codex --config shell_environment_policy.inherit=all --config model_reasoning_effort=high --model gpt-5.3-codex app-server
+  command: codex --config shell_environment_policy.inherit=all --config model_reasoning_effort=medium --model gpt-5.4 app-server
   approval_policy: never
   thread_sandbox: workspace-write
   turn_sandbox_policy:
@@ -114,24 +125,34 @@ Read in this order before implementation:
 - Do not create a git commit for partial, broken, or unvalidated work.
 - If a commit is not possible, state why in the final report and keep the ticket in `In Progress` unless the human explicitly wants handoff without a commit.
 
-## Tracker routing
+ ## Tracker routing
 
 - `Backlog` -> do not modify the issue; stop and wait for it to move into an active state.
 - `Todo` -> move to `In Progress` before implementation.
 - `In Progress` -> execute the work and keep the issue there until the implementation and validation bar is met.
-- `In Review` -> handoff state only; do not code unless a human moves the issue back to `In Progress`.
+- `In Review` -> fallback review state only; use it when branch/PR work exists but merge cannot complete automatically. Do not code unless a human moves the issue back to `In Progress`.
 - `Done`, `Canceled`, `Duplicate` -> terminal; do nothing.
 
-`In Review` is intentionally excluded from `active_states` so Symphony stops polling a ticket once it has been handed off successfully.
+`In Review` is intentionally excluded from `active_states` so Symphony stops polling a ticket once it has reached human review or another non-automatable merge blocker.
 
 ## Handoff state model
 
 - Start: if a ticket is in `Todo`, immediately move it to `In Progress` before making changes.
 - Execute: keep the ticket in `In Progress` while reproducing, implementing, validating, and updating docs.
-- Handoff: once scope is complete, the required validation passes, and a git commit has been created, move the ticket to `In Review` and stop.
+- Handoff: once scope is complete and validation is green, create or reuse the ticket branch, create a git commit with a precise message, push the ticket branch, and create or update the PR that corresponds to it.
 - Re-entry: if human review requests changes, the human should move the ticket back to `In Progress`, which makes it eligible for another unattended run.
-- Closure: move to `Done` only after review/merge is actually complete.
+- Closure: move to `Done` only after merge is actually complete.
 - Blockers: if required secrets, auth, or external permissions are missing, leave the ticket in `In Progress`, record the blocker clearly, and stop.
+
+## Ticket git lifecycle
+
+- Use one branch per active ticket / PR.
+- Reuse that branch while its PR remains open.
+- Start new ticket branches from the current remote default branch state.
+- Use precise commit messages with subject, what changed, why, and validation.
+- After pushing, create or update the PR for the ticket branch instead of creating multiple competing branches.
+- If merge succeeds, request remote branch deletion as part of merge and let the terminal-state cleanup remove the isolated workspace.
+- If merge cannot complete automatically because checks, review requirements, or permissions block it, move the ticket to `In Review` and stop.
 
 ## Execution flow
 
@@ -142,10 +163,12 @@ Read in this order before implementation:
 5. Add or update the tests, fixtures, docs, or metrics required to satisfy the repo definition of done for the scope you touched.
 6. Run the most relevant validation commands for the touched area.
 7. Update any stale docs, examples, setup instructions, workflow docs, status files, or harness metadata that became inaccurate because of the change.
-8. If the task is complete and validation is green, create a git commit with a precise message before handing off.
-9. If the task is complete, validation is green, and the commit succeeded, move the Linear issue to `In Review` before stopping.
-10. If blocked by missing required access, or if a completed task cannot be committed, keep the issue in `In Progress`, record the blocker clearly, and stop.
-11. Summarize completed work, evidence-backed progress, validation, final ticket state, blockers, and any unresolved risks.
+8. If the task is complete and validation is green, create or reuse the ticket branch and create a git commit with a precise message.
+9. Push the ticket branch and create or update the PR that corresponds to it.
+10. If merge can complete automatically, merge the PR, delete the remote branch as part of merge, and move the Linear issue to `Done`.
+11. If merge cannot complete automatically because checks, review requirements, or permissions still need human attention, move the issue to `In Review`, record the exact blocker or waiting state, and stop.
+12. If blocked by missing required access, or if a completed task cannot be committed or pushed, keep the ticket in `In Progress`, record the blocker clearly, and stop.
+13. Summarize completed work, evidence-backed progress, validation, final ticket state, blockers, and any unresolved risks.
 
 ## Default validation commands
 
@@ -165,7 +188,7 @@ For significant implementation work, prefer to include both `pnpm test` and `pnp
 - Dependencies are installed with `pnpm install --frozen-lockfile`.
 - Local services start with `docker compose up -d`.
 - Repo readiness is checked with `pnpm doctor`.
-- Repo bootstrap defaults to the local source path `/Users/rajeev/Code/property-search`.
+- Repo bootstrap defaults to the local source path `/Users/rajeev/Code/property-search`, cloning from that path when `.git` is available so ticket workspaces remain git-backed.
 - `PROPERTY_SEARCH_REPO_URL` is an optional override for cloning from a remote instead.
 - The long-term raw source input contract is `data/seeds/estate-agents.csv`.
 - External provider credentials are expected in `.env`.

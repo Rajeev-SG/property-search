@@ -1,5 +1,34 @@
 # Development Log
 
+## 2026-03-20T01:52:01Z — Symphony workflow simplified around git-backed ticket branches
+
+### What changed
+
+- Updated `WORKFLOW.md` so local-source Symphony workspaces clone from the local repo when `.git` is available instead of only rsyncing a `.git`-less copy.
+- Shifted the property-search automation model to workflow-owned git/PR/merge behavior instead of relying on Symphony-core handoff enforcement.
+- Documented the intended ticket lifecycle as one branch per active ticket / PR, merge when possible, and remote branch deletion after merge.
+- Clarified that `In Review` is now a fallback state for cases where merge cannot complete automatically.
+
+### Why it changed
+
+The previous local workspace bootstrap could create isolated workspaces without `.git`, which made commit/push handoff unreliable and pushed repo-specific review policy into Symphony core. The simplified model keeps Symphony focused on orchestration and observability while the repository workflow owns commit, push, PR, merge, and fallback review behavior.
+
+### Files touched
+
+- `WORKFLOW.md`
+- `AGENTS.md`
+- `README.md`
+- `docs/DEVELOPMENT_LOG.md`
+
+### Validation performed
+
+- Verified the updated workflow contract and docs stay aligned on branch-per-ticket and merge/cleanup behavior.
+
+### Follow-ups
+
+- Validate a fresh Symphony-created workspace to confirm `.git`, branch, and remote wiring are correct.
+- Re-run unattended ticket flow against a real Linear issue after the Symphony-core cleanup is complete.
+
 ## 2026-03-19T22:17:00Z — Source-registry contract confirmed and Ticket 001 closed
 
 ### What changed
