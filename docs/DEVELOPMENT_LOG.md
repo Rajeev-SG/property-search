@@ -1,5 +1,35 @@
 # Development Log
 
+## 2026-03-20T18:38:00Z — Ticket 008 PR follow-up hardening
+
+### What changed
+
+- Hardened `resolveFetchPipelineSmokeTarget` so blank `sourceId` values are treated as explicit invalid pin requests instead of silently allowing fixture fallback.
+- Expanded smoke-target tests to cover explicit fixture precedence, strict `requireSourceRegistry` behavior, and blank `sourceId` rejection.
+- Tightened the source-registry fetch-target test to assert deterministic SQL ordering and limit semantics, then added explicit `crawl:smoke` flag examples to the README.
+
+### Why it changed
+
+The open PR still had an unresolved review thread around empty `sourceId` handling in the smoke target resolver. This follow-up closes that edge case without widening the Ticket `008` scope, and it adds the missing test/operator documentation coverage around the current CLI modes.
+
+### Files touched
+
+- `README.md`
+- `docs/DEVELOPMENT_LOG.md`
+- `packages/crawl/src/smoke.ts`
+- `tests/crawl-fetch-smoke.test.ts`
+- `tests/source-registry-fetch-target.test.ts`
+
+### Validation performed
+
+- `pnpm test -- tests/crawl-fetch-smoke.test.ts tests/source-registry-fetch-target.test.ts`
+- `pnpm typecheck`
+
+### Validation results
+
+- Focused smoke-target and source-registry fetch-target coverage: passed.
+- Root TypeScript no-emit check: passed.
+
 ## 2026-03-20T18:28:00Z — Ticket 008 source-registry-backed crawl smoke target
 
 ### What changed

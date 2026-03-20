@@ -25,7 +25,11 @@ describe("source registry fetch target lookup", () => {
       }
     });
 
-    expect(query).toHaveBeenCalledWith(expect.stringContaining("FROM source_registry"), [null]);
+    expect(query).toHaveBeenCalledWith(expect.any(String), [null]);
+    const [sql] = query.mock.calls[0] as [string, unknown[]];
+    expect(sql).toContain("FROM source_registry");
+    expect(sql).toContain("ORDER BY raw_input_path ASC, raw_row_number ASC");
+    expect(sql).toContain("LIMIT 1");
     expect(target).toEqual({
       brandName: "Acme Estates",
       branchName: "Central",

@@ -54,6 +54,13 @@ export async function resolveFetchPipelineSmokeTarget(
     loadSourceRegistryTarget?: SourceRegistryTargetLoader;
   } = {}
 ): Promise<FetchPipelineSmokeTarget> {
+  const hasSourceId = options.sourceId !== undefined;
+  const normalizedSourceId = options.sourceId?.trim();
+
+  if (hasSourceId && !normalizedSourceId) {
+    throw new Error('No enabled source_registry row found for source_id ""');
+  }
+
   if (options.fixture) {
     return FIXTURE_SMOKE_TARGET;
   }
@@ -64,12 +71,12 @@ export async function resolveFetchPipelineSmokeTarget(
   try {
     const source = await loadSourceRegistryTarget({
       databaseUrl: options.databaseUrl,
-      sourceId: options.sourceId
+      sourceId: normalizedSourceId
     });
 
     if (!source) {
-      if (options.sourceId) {
-        throw new Error(`No enabled source_registry row found for source_id "${options.sourceId}"`);
+      if (hasSourceId) {
+        throw new Error(`No enabled source_registry row found for source_id "${normalizedSourceId}"`);
       }
 
       if (options.requireSourceRegistry) {
@@ -96,7 +103,7 @@ export async function resolveFetchPipelineSmokeTarget(
       targetKind: "source_registry"
     };
   } catch (error) {
-    if (options.sourceId || options.requireSourceRegistry) {
+    if (hasSourceId || options.requireSourceRegistry) {
       throw error;
     }
 

@@ -136,6 +136,9 @@ At the time of writing, the next repo ticket is `009-site-profiling-and-discover
 - `pnpm db:smoke` — create a fresh temporary database, apply migrations, and verify the baseline schema
 - `pnpm artifacts:smoke` — create a synthetic local run plus manifest under `artifacts/runs/`
 - `pnpm crawl:smoke` — run the Ticket `008` fetch/render smoke path against the first enabled `source_registry` row when available, otherwise fall back to the deterministic fixture target and persist raw/rendered/diagnostic artifacts under `artifacts/runs/`
+- `pnpm crawl:smoke -- --fixture` — force the deterministic fixture target for offline or repeatable smoke runs
+- `pnpm crawl:smoke -- --source-id src_example` — target a specific enabled `source_registry` row by stable source ID
+- `pnpm crawl:smoke -- --require-source-registry` — require a database-backed source row and fail instead of falling back to the fixture
 - `pnpm source-registry:ingest -- --dry-run` — normalize the seed CSV, print import/skip counts, and write the full ingest report under `artifacts/source-registry/ingests/`
 - `pnpm plans:list` — list broad execution plans
 - `pnpm validate:fixture` — validate the synthetic extracted-listing, canonical-property, and search-document fixtures
