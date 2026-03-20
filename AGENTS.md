@@ -155,8 +155,8 @@ If a task needs a CLI or MCP tool that is not listed in `docs/cli-tools.md`, say
 - Trigger `@openreview-property-search` on the PR whenever the latest pushed head has not yet received an OpenReview pass.
 - Gather PR review comments, unresolved review threads, review state, OpenReview state for the current head, and required checks before deciding whether the work is ready to merge.
 - Apply actionable review, OpenReview, or check feedback on the same branch, then commit, push, and re-check the same PR.
-- Do not treat a PR as complete while current-head OpenReview is still pending or while actionable OpenReview feedback remains unresolved.
-- Leave concise Linear milestone comments when implementation starts, when the PR is created, when OpenReview requires more changes, when follow-up changes are pushed, when the PR is approved or merged, and when the workflow is blocked.
+- Do not treat a PR as complete while current-head OpenReview is still pending or while actionable OpenReview feedback remains unresolved; keep the issue in `In Progress` while that wait state is still within the configured timeout window.
+- Leave concise Linear milestone comments when implementation starts, when the PR is created, when OpenReview is `triggered`, when OpenReview remains `pending`, when OpenReview requires more changes, when follow-up changes are pushed, when the PR is approved or merged, and when the workflow is blocked.
 - After merge succeeds, leave a final Linear comment with the merged PR URL plus the validation/check snapshot that justified completion.
 - Prefer finishing the automated flow with PR merge plus remote branch deletion; move a ticket to `Done` only after merge succeeds.
 - Use `In Review` only when merge cannot complete automatically because of unresolved review, unresolved OpenReview, failing required checks, missing auth or permissions, or another explicit blocker that the unattended run cannot clear.

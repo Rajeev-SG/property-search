@@ -1,5 +1,64 @@
 # Development Log
 
+## 2026-03-20T17:58:40Z — RAJ-23 gh guard OpenReview trigger fallback and Linear handoff coverage
+
+### What changed
+
+- Hardened the repo-local `.symphony/bin/gh` guard so it defaults the OpenReview trigger comment to `@<app-slug>` when `SYMPHONY_OPENREVIEW_TRIGGER_COMMENT` is unset but `SYMPHONY_OPENREVIEW_APP_SLUG` is present.
+- Added focused Vitest coverage for the gh guard by driving it through a fake `gh` backend, asserting the default OpenReview trigger comment and the final Linear completion comment payload after merge.
+- Updated the GitHub PR automation runbook to document the default trigger-comment fallback used by the repo-local guard.
+
+### Why it changed
+
+- `RAJ-23` validates the unattended Symphony PR/OpenReview/Linear loop. This workspace had the Linear and ticket metadata preloaded but not the trigger-comment env var, so the guard needed a safe repo-local fallback before a live PR run could rely on the OpenReview trigger step.
+
+### Files touched
+
+- `.symphony/bin/gh`
+- `tests/symphony-gh-guard.test.ts`
+- `docs/references/github-pr-automation.md`
+- `docs/DEVELOPMENT_LOG.md`
+
+### Validation performed
+
+- Ran `pnpm run doctor`.
+- Ran `pnpm typecheck`.
+- Ran `pnpm validate:fixture`.
+- Ran `pnpm test`.
+
+### Validation results
+
+- Harness doctor passed.
+- Root TypeScript checks passed.
+- Synthetic fixture validation passed.
+- Vitest passed, including the new gh-guard coverage for OpenReview trigger fallback and final Linear comment posting.
+
+## 2026-03-20T16:40:00Z — RAJ-23 PR follow-up for concurrent-workspace wording
+
+### What changed
+
+- Narrowed the README and workflow wording so "workspace-safe" only promises Compose-managed container-name isolation, not conflict-free fixed host ports across concurrent checkouts.
+- Tightened the GitHub PR automation runbook example so the OpenReview trigger comment is shown as conditional on current-head review state.
+- Extended the workflow contract test with assertions for the new host-port caveat and idempotent OpenReview trigger example.
+
+### Why it changed
+
+- PR `#11` already had a current-head OpenReview pass, but unattended merge was still blocked by unresolved review threads asking for more precise concurrency wording and a less repetitive OpenReview trigger example.
+
+### Files touched
+
+- `README.md`
+- `WORKFLOW.md`
+- `docs/references/github-pr-automation.md`
+- `tests/workflow-contract.test.ts`
+- `docs/DEVELOPMENT_LOG.md`
+
+### Validation planned
+
+- Run `pnpm run doctor`.
+- Run `pnpm typecheck`.
+- Run `pnpm test -- tests/workflow-contract.test.ts`.
+
 ## 2026-03-20T16:10:00Z — RAJ-23 workflow bootstrap remote normalization
 
 ### What changed

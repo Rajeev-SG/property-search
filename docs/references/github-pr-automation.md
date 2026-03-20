@@ -73,6 +73,8 @@ Keep branch, PR, review-loop, and merge behavior inside the repository workflow 
    fi
    ```
 
+   Record a Linear milestone comment when OpenReview is `triggered`, including the PR URL and trigger timestamp so the current-head wait state is visible outside GitHub.
+
 ## Review and check gathering
 
 Collect all of the following before deciding whether the PR is ready to merge.
@@ -180,10 +182,21 @@ Keep Linear comments concise and milestone-oriented throughout the same flow:
 
 - implementation started
 - PR created
+- OpenReview `triggered`
+- OpenReview `pending`
 - OpenReview requires follow-up changes
 - follow-up changes pushed
 - PR approved or merged
 - workflow blocked
+
+If current-head OpenReview is still `pending` but remains within the configured timeout window, keep the ticket in `In Progress`, keep the same PR active, and update Linear with that wait state instead of routing immediately to `In Review`.
+
+Use the same concise OpenReview lifecycle labels consistently in Linear comments and handoff evidence:
+
+- `triggered`: the PR exists, the current PR head has not been reviewed yet, and the trigger comment was posted for that head.
+- `pending`: OpenReview has not produced a current-head review result yet, but the configured timeout window has not expired, so the issue stays in `In Progress`.
+- `satisfied`: OpenReview approved the current head or reviewed it without blocking feedback, so the PR can continue toward merge once the other gates are green.
+- `timed_out_or_escalated`: OpenReview did not produce a current-head result before the timeout window expired, or another explicit blocker made further unattended progress unsafe.
 
 Do not move the Linear issue to `Done` merely because auto-merge or a merge queue was requested. Move it to `Done` only after GitHub reports the PR as merged.
 

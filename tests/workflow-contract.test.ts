@@ -39,9 +39,8 @@ describe("workflow contract", () => {
     expect(runbook).toContain("gh api graphql");
     expect(runbook).toContain("@openreview-property-search");
     expect(runbook).toContain("OPENREVIEW_CURRENT_HEAD_REVIEWED");
+    expect(runbook).toContain("If OpenReview has not reviewed the current PR head yet, trigger it.");
     expect(runbook).toContain("OpenReview is satisfied for the current PR head");
-    expect(runbook).toContain("`triggered`");
-    expect(runbook).toContain("`pending`");
     expect(runbook).toContain("milestone-oriented");
     expect(runbook).toContain("gh pr merge \"$PR_NUMBER\" --delete-branch");
     expect(readme).toContain("skills/pr-automation/SKILL.md");

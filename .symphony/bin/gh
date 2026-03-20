@@ -1,0 +1,662 @@
+#!/usr/bin/env python3
+import json
+from datetime import datetime, timedelta, timezone
+import os
+import re
+import subprocess
+import sys
+import urllib.request
+
+ISSUE_IDENTIFIER = "RAJ-23"
+ISSUE_TITLE = "Validate Symphony OpenReview and Linear PR loop"
+ISSUE_BRANCH_NAME = "rajeevsgill/raj-23-validate-symphony-openreview-and-linear-pr-loop"
+ISSUE_URL = "https://linear.app/rajeevs-experiments/issue/RAJ-23/validate-symphony-openreview-and-linear-pr-loop"
+LINEAR_ENDPOINT = os.environ.get("SYMPHONY_LINEAR_ENDPOINT", "https://api.linear.app/graphql")
+OPENREVIEW_APP_SLUG = os.environ.get("SYMPHONY_OPENREVIEW_APP_SLUG")
+OPENREVIEW_TRIGGER_COMMENT = os.environ.get("SYMPHONY_OPENREVIEW_TRIGGER_COMMENT")
+OPENREVIEW_BOT_LOGIN = f"{OPENREVIEW_APP_SLUG}[bot]" if OPENREVIEW_APP_SLUG else None
+try:
+    OPENREVIEW_TIMEOUT_MS = int(os.environ.get("SYMPHONY_OPENREVIEW_TIMEOUT_MS", "600000"))
+except ValueError:
+    OPENREVIEW_TIMEOUT_MS = 600000
+
+
+def fail(message, code=1):
+    sys.stderr.write(f"{message}\n")
+    sys.exit(code)
+
+
+def repo_root():
+    result = subprocess.run([
+        os.environ.get("SYMPHONY_REAL_GH", "gh"), "--version"
+    ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if result.returncode != 0:
+        fail("Symphony GitHub guard could not execute the real gh binary.", 127)
+
+    git = subprocess.run(["git", "rev-parse", "--show-toplevel"], text=True, capture_output=True)
+    if git.returncode != 0:
+        return os.getcwd()
+    return git.stdout.strip() or os.getcwd()
+
+
+def strip_comments(text):
+    return re.sub(r"<!--.*?-->", "", text, flags=re.S)
+
+
+def parse_sections(markdown):
+    sections = {}
+    current = None
+    for raw_line in markdown.splitlines():
+        line = raw_line.rstrip("\n")
+        if re.match(r"^##\s+", line):
+            current = line.strip()
+            sections[current] = []
+            continue
+        if current is not None:
+            sections[current].append(line)
+    return sections
+
+
+def meaningful_section_content(lines):
+    cleaned = []
+    for line in lines:
+        text = strip_comments(line).strip()
+        if text:
+            cleaned.append(text)
+    if not cleaned:
+        return False
+    return any(re.search(r"[A-Za-z0-9]", entry) for entry in cleaned)
+
+
+def required_sections(template_path):
+    if os.path.exists(template_path):
+        template = open(template_path, "r", encoding="utf-8").read()
+        sections = [line.strip() for line in template.splitlines() if re.match(r"^##\s+", line.strip())]
+        if sections:
+            return sections
+    return ["## Summary", "## Validation"]
+
+
+def load_pr_body(args):
+    for idx, arg in enumerate(args):
+        if arg in ("--body-file", "-F") and idx + 1 < len(args):
+            return open(args[idx + 1], "r", encoding="utf-8").read()
+        if arg in ("--body", "-b") and idx + 1 < len(args):
+            return args[idx + 1]
+    return None
+
+
+def validation_errors_for_body(body, template_path):
+    if body is None:
+        return ["PR body is required. Use --body-file with the repo PR template."]
+
+    errors = []
+    sections = parse_sections(body)
+    normalized = strip_comments(body)
+
+    for heading in required_sections(template_path):
+        if heading not in sections:
+            errors.append(f"PR body must include section '{heading}'.")
+            continue
+        if not meaningful_section_content(sections[heading]):
+            errors.append(f"PR body section '{heading}' must contain non-placeholder content.")
+
+    if len(re.sub(r"\s+", " ", normalized).strip()) < 180:
+        errors.append("PR body is too short to be a useful unattended handoff summary.")
+
+    return errors
+
+
+def run_real_gh(args, check=True):
+    gh = os.environ.get("SYMPHONY_REAL_GH")
+    if not gh:
+        fail("Symphony GitHub guard is missing SYMPHONY_REAL_GH.", 127)
+
+    result = subprocess.run([gh] + args, text=True, capture_output=True)
+    if check and result.returncode != 0:
+        if result.stdout:
+            sys.stdout.write(result.stdout)
+        if result.stderr:
+            sys.stderr.write(result.stderr)
+        sys.exit(result.returncode)
+    return result
+
+
+def resolve_pr_target(args):
+    for arg in args:
+        if not arg.startswith("-"):
+            return arg
+    return None
+
+
+def parse_json_stdout(result, description):
+    try:
+        return json.loads(result.stdout or "null")
+    except json.JSONDecodeError as exc:
+        fail(f"Symphony GitHub guard could not parse {description}: {exc}")
+
+
+def no_checks_output(text):
+    normalized = (text or "").lower()
+    return (
+        "no checks" in normalized
+        or "no status checks" in normalized
+        or "no required checks" in normalized
+    )
+
+
+def decode_optional_json(text):
+    raw = (text or "").strip()
+    if not raw:
+        return None
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        return None
+
+
+def normalize_check_state(value):
+    return (value or "").strip().lower().replace("_", "")
+
+
+def blocking_required_checks(pr_number):
+    result = run_real_gh(
+        ["pr", "checks", str(pr_number), "--required", "--json", "name,state,workflow,link"],
+        check=False,
+    )
+    combined_output = "".join(part for part in [result.stdout, result.stderr] if part)
+
+    if result.returncode != 0 and no_checks_output(combined_output):
+        return [], []
+
+    checks = decode_optional_json(result.stdout)
+    if checks is None:
+        if result.returncode != 0:
+            if result.stdout:
+                sys.stdout.write(result.stdout)
+            if result.stderr:
+                sys.stderr.write(result.stderr)
+            sys.exit(result.returncode)
+        fail("Symphony GitHub guard could not parse required check data.")
+
+    blocking = []
+    allowed = {"success", "successful", "passing", "pass", "neutral", "skipped", "skip", "completed"}
+    for check in checks:
+        state = normalize_check_state(check.get("state"))
+        if state not in allowed:
+            blocking.append(check)
+    return checks, blocking
+
+
+def blocking_review_state(pr_payload):
+    review_decision = (pr_payload.get("reviewDecision") or "").strip().upper()
+    if review_decision in {"CHANGES_REQUESTED", "REVIEW_REQUIRED"}:
+        return review_decision
+    return None
+
+
+def blocking_mergeability(pr_payload):
+    merge_state = (pr_payload.get("mergeStateStatus") or "").strip().upper()
+    if merge_state in {"DIRTY", "BLOCKED", "DRAFT", "BEHIND", "UNSTABLE", "HAS_HOOKS"}:
+        return merge_state
+    return None
+
+
+def validation_section_lines(body):
+    sections = parse_sections(body)
+    lines = sections.get("## Validation", [])
+    return [strip_comments(line).strip() for line in lines if strip_comments(line).strip()]
+
+
+def repo_coordinates():
+    payload = parse_json_stdout(
+        run_real_gh(["repo", "view", "--json", "nameWithOwner"]),
+        "repository coordinates",
+    )
+    name_with_owner = (payload or {}).get("nameWithOwner") or ""
+    if "/" not in name_with_owner:
+        fail("Symphony GitHub guard could not resolve the repository owner/name.")
+    return tuple(name_with_owner.split("/", 1))
+
+
+def gh_api_json(path):
+    return parse_json_stdout(run_real_gh(["api", path]), path)
+
+
+def gh_graphql_json(query, variables):
+    args = ["api", "graphql", "-f", f"query={query}"]
+    for key, value in variables.items():
+        if isinstance(value, int):
+            args += ["-F", f"{key}={value}"]
+        else:
+            args += ["-f", f"{key}={value}"]
+    return parse_json_stdout(run_real_gh(args), "GitHub GraphQL payload")
+
+
+def parse_iso(value):
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def latest_item(items, timestamp_key):
+    latest = None
+    latest_at = None
+    for item in items or []:
+        current_at = parse_iso(item.get(timestamp_key))
+        if current_at is None:
+            continue
+        if latest_at is None or current_at > latest_at:
+            latest = item
+            latest_at = current_at
+    return latest
+
+
+def compare_datetimes(left, right):
+    if left is None and right is None:
+        return 0
+    if left is None:
+        return -1
+    if right is None:
+        return 1
+    if left < right:
+        return -1
+    if left > right:
+        return 1
+    return 0
+
+
+def trigger_comment_for_current_head(issue_comments, head_commit_at):
+    if not OPENREVIEW_APP_SLUG:
+        return None
+
+    matches = [
+        comment for comment in (issue_comments or [])
+        if f"@{OPENREVIEW_APP_SLUG}".lower() in (comment.get("body") or "").lower()
+    ]
+    latest = latest_item(matches, "created_at")
+    if latest is None:
+        return None
+
+    latest_at = parse_iso(latest.get("created_at"))
+    if head_commit_at is None or (latest_at is not None and latest_at >= head_commit_at):
+        return latest
+    return None
+
+
+def latest_bot_comment_for_current_head(issue_comments, head_commit_at):
+    if not OPENREVIEW_BOT_LOGIN:
+        return None
+
+    matches = [
+        comment for comment in (issue_comments or [])
+        if ((comment.get("user") or {}).get("login") == OPENREVIEW_BOT_LOGIN)
+    ]
+    latest = latest_item(matches, "created_at")
+    if latest is None:
+        return None
+
+    latest_at = parse_iso(latest.get("created_at"))
+    if head_commit_at is None or (latest_at is not None and latest_at >= head_commit_at):
+        return latest
+    return None
+
+
+def head_commit_timestamp(owner, repo, head_ref_oid):
+    if not head_ref_oid:
+        return None
+    payload = gh_api_json(f"repos/{owner}/{repo}/commits/{head_ref_oid}") or {}
+    value = (
+        payload.get("commit", {}).get("committer", {}).get("date")
+        or payload.get("commit", {}).get("author", {}).get("date")
+    )
+    return parse_iso(value)
+
+
+def review_threads(owner, repo, pr_number):
+    payload = gh_graphql_json(
+        '''
+        query($owner: String!, $name: String!, $number: Int!) {
+          repository(owner: $owner, name: $name) {
+            pullRequest(number: $number) {
+              reviewThreads(first: 100) {
+                nodes {
+                  isResolved
+                  isOutdated
+                  comments(first: 20) {
+                    nodes {
+                      body
+                      url
+                      createdAt
+                      author {
+                        login
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        '''.strip(),
+        {"owner": owner, "name": repo, "number": pr_number},
+    )
+    return (((payload or {}).get("data") or {}).get("repository") or {}).get("pullRequest", {}).get("reviewThreads", {}).get("nodes") or []
+
+
+def openreview_status(pr_payload):
+    if not OPENREVIEW_APP_SLUG:
+        return None
+
+    owner, repo = repo_coordinates()
+    pr_number = pr_payload.get("number")
+    head_ref_oid = pr_payload.get("headRefOid")
+    reviews = gh_api_json(f"repos/{owner}/{repo}/pulls/{pr_number}/reviews") or []
+    issue_comments = gh_api_json(f"repos/{owner}/{repo}/issues/{pr_number}/comments") or []
+    head_commit_at = head_commit_timestamp(owner, repo, head_ref_oid)
+    current_head_reviews = [
+        review for review in reviews
+        if ((review.get("user") or {}).get("login") == OPENREVIEW_BOT_LOGIN) and review.get("commit_id") == head_ref_oid
+    ]
+    latest_review = latest_item(current_head_reviews, "submitted_at")
+    trigger_comment = trigger_comment_for_current_head(issue_comments, head_commit_at)
+    latest_bot_comment = latest_bot_comment_for_current_head(issue_comments, head_commit_at)
+    actionable_threads = []
+    for thread in review_threads(owner, repo, pr_number):
+        if thread.get("isResolved") or thread.get("isOutdated"):
+            continue
+        comments = (((thread or {}).get("comments") or {}).get("nodes")) or []
+        if any((((comment.get("author") or {}).get("login")) == OPENREVIEW_BOT_LOGIN) for comment in comments):
+            actionable_threads.append(thread)
+
+    latest_state = (latest_review or {}).get("state")
+    current_head_reviewed = latest_review is not None
+    trigger_at = parse_iso((trigger_comment or {}).get("created_at"))
+    review_at = parse_iso((latest_review or {}).get("submitted_at"))
+    bot_comment_at = parse_iso((latest_bot_comment or {}).get("created_at"))
+    response_at = review_at if compare_datetimes(review_at, bot_comment_at) >= 0 else bot_comment_at
+    response_seen = response_at is not None and compare_datetimes(response_at, trigger_at) >= 0
+    wait_age_ms = int((datetime.now(timezone.utc) - trigger_at).total_seconds() * 1000) if trigger_at else None
+    feedback_signal, feedback_source = classify_openreview_feedback(
+        (latest_review or {}).get("body"),
+        (latest_bot_comment or {}).get("body"),
+    )
+    commented_review = current_head_reviewed and (latest_state or "").upper() == "COMMENTED"
+    timed_out = (
+        not current_head_reviewed
+        and trigger_comment is not None
+        and not response_seen
+        and wait_age_ms is not None
+        and wait_age_ms >= OPENREVIEW_TIMEOUT_MS
+    )
+    needs_trigger = not current_head_reviewed and trigger_comment is None
+    pending = not current_head_reviewed and trigger_comment is not None and not timed_out
+    blocking_feedback = current_head_reviewed and (
+        (latest_state or "").upper() == "CHANGES_REQUESTED"
+        or len(actionable_threads) > 0
+        or feedback_signal == "action_required"
+        or (commented_review and feedback_signal != "non_blocking")
+    )
+    approved = current_head_reviewed and (latest_state or "").upper() == "APPROVED" and not actionable_threads
+
+    if needs_trigger:
+        summary = "OpenReview has not been triggered for the current PR head."
+    elif timed_out:
+        summary = (
+            "OpenReview has not responded for the current PR head within "
+            f"{max(OPENREVIEW_TIMEOUT_MS // 60000, 1)} minutes."
+        )
+    elif pending and response_seen:
+        summary = "OpenReview responded on the PR, but a current-head review artifact is not visible yet."
+    elif pending:
+        summary = "OpenReview is still reviewing the current PR head."
+    elif blocking_feedback:
+        if (latest_state or "").upper() == "CHANGES_REQUESTED":
+            summary = "OpenReview requested changes on the current PR head."
+        elif actionable_threads:
+            summary = "OpenReview left actionable review threads on the current PR head."
+        elif feedback_signal == "action_required":
+            summary = f"OpenReview left actionable feedback in its {human_feedback_source(feedback_source)} on the current PR head."
+        else:
+            summary = "OpenReview reviewed the current PR head, but the feedback was not explicitly marked as non-blocking."
+    elif approved:
+        summary = "OpenReview approved the current PR head."
+    else:
+        summary = "OpenReview reviewed the current PR head without blocking feedback."
+
+    return {
+        "enabled": True,
+        "needs_trigger": needs_trigger,
+        "pending": pending,
+        "timed_out": timed_out,
+        "blocking_feedback": blocking_feedback,
+        "approved": approved,
+        "feedback_signal": feedback_signal,
+        "feedback_source": feedback_source,
+        "summary": summary,
+    }
+
+
+def classify_openreview_feedback(review_body, bot_comment_body):
+    signals = []
+    for source, body in [("review", review_body), ("summary_comment", bot_comment_body)]:
+        signal = classify_openreview_feedback_body(body)
+        if signal:
+            signals.append((signal, source))
+
+    for signal, source in signals:
+        if signal == "action_required":
+            return signal, source
+
+    for signal, source in signals:
+        if signal == "non_blocking":
+            return signal, source
+
+    return "unknown", None
+
+
+def classify_openreview_feedback_body(body):
+    normalized = (body or "").strip().lower()
+    if not normalized:
+        return None
+
+    actionable_markers = [
+        "issues identified",
+        "key findings",
+        "would benefit from",
+        "before merging",
+        "needs work",
+    ]
+    non_blocking_markers = [
+        "ready for approval",
+        "recommendation: approve",
+        "approve ✅",
+        "non-blocking",
+        "no actionable findings",
+        "without blocking feedback",
+        "no blocking feedback",
+        "optional improvements, not blockers",
+        "no actionable comments were generated",
+    ]
+
+    if any(marker in normalized for marker in actionable_markers):
+        return "action_required"
+    if any(marker in normalized for marker in non_blocking_markers):
+        return "non_blocking"
+    return None
+
+
+def human_feedback_source(source):
+    if source == "review":
+        return "review body"
+    if source == "summary_comment":
+        return "summary comment"
+    return "review output"
+
+
+def ensure_openreview_triggered(pr_payload):
+    status = openreview_status(pr_payload)
+    if status and status.get("needs_trigger"):
+        run_real_gh([
+            "pr", "comment", str(pr_payload.get("number")), "--body", OPENREVIEW_TRIGGER_COMMENT
+        ])
+        status["needs_trigger"] = False
+        status["pending"] = True
+        status["timed_out"] = False
+        status["summary"] = "OpenReview was triggered for the current PR head and is still pending."
+    return status
+
+
+def post_linear_comment(pr_payload, checks):
+    issue_id = os.environ.get("SYMPHONY_ISSUE_ID")
+    linear_api_key = os.environ.get("LINEAR_API_KEY")
+    if not issue_id or not linear_api_key:
+        return
+
+    pr_url = pr_payload.get("url") or "n/a"
+    pr_title = pr_payload.get("title") or "n/a"
+    branch_name = pr_payload.get("headRefName") or ISSUE_BRANCH_NAME or "n/a"
+    merged_at = pr_payload.get("mergedAt") or "n/a"
+    validation_lines = validation_section_lines(pr_payload.get("body") or "")
+    check_lines = [f"- {check.get('name', 'unknown')} — {check.get('state', 'unknown')}" for check in checks] or ["- none reported"]
+    validation_block = "\n".join(f"- {line}" if not line.startswith("-") else line for line in validation_lines) or "- Validation details were not captured in the PR body."
+
+    body = "\n".join([
+        "Unattended handoff completed.",
+        "",
+        f"- Issue: {ISSUE_IDENTIFIER or os.environ.get('SYMPHONY_ISSUE_IDENTIFIER') or 'n/a'}",
+        f"- Title: {ISSUE_TITLE or os.environ.get('SYMPHONY_ISSUE_TITLE') or 'n/a'}",
+        f"- PR: {pr_title} ({pr_url})",
+        f"- Branch: {branch_name}",
+        f"- Merged at: {merged_at}",
+        f"- Linear issue: {ISSUE_URL or os.environ.get('SYMPHONY_ISSUE_URL') or 'n/a'}",
+        "",
+        "Validation:",
+        validation_block,
+        "",
+        "Required check snapshot at merge time:",
+        "\n".join(check_lines)
+    ])
+
+    payload = json.dumps({
+        "query": "mutation SymphonyCreateComment($issueId: String!, $body: String!) { commentCreate(input: {issueId: $issueId, body: $body}) { success } }",
+        "variables": {"issueId": issue_id, "body": body}
+    }).encode("utf-8")
+
+    request = urllib.request.Request(
+        LINEAR_ENDPOINT,
+        data=payload,
+        headers={
+            "Authorization": linear_api_key,
+            "Content-Type": "application/json"
+        },
+        method="POST"
+    )
+
+    try:
+        with urllib.request.urlopen(request, timeout=20) as response:
+            raw = response.read().decode("utf-8")
+    except Exception as exc:
+        fail(f"Symphony GitHub guard merged the PR but could not post the final Linear comment: {exc}")
+
+    data = json.loads(raw)
+    if not data.get("data", {}).get("commentCreate", {}).get("success"):
+        fail("Symphony GitHub guard merged the PR but Linear did not accept the final comment.")
+
+
+def handle_pr_create_or_edit(subcommand_args):
+    template_path = os.path.join(repo_root(), ".github", "pull_request_template.md")
+    body = load_pr_body(subcommand_args)
+    errors = validation_errors_for_body(body, template_path)
+    if errors:
+        fail("\n".join(["Symphony GitHub guard rejected the PR body:"] + [f"- {error}" for error in errors]))
+
+    result = run_real_gh(["pr", sys.argv[2]] + subcommand_args, check=False)
+    if result.stdout:
+        sys.stdout.write(result.stdout)
+    if result.stderr:
+        sys.stderr.write(result.stderr)
+    if result.returncode != 0:
+        sys.exit(result.returncode)
+
+    if OPENREVIEW_APP_SLUG:
+        pr_payload = parse_json_stdout(
+            run_real_gh(["pr", "view", "--json", "number,headRefOid"]),
+            "PR metadata after create/edit",
+        )
+        ensure_openreview_triggered(pr_payload)
+
+
+def handle_pr_merge(subcommand_args):
+    target = resolve_pr_target(subcommand_args)
+    view_args = ["pr", "view"]
+    if target:
+        view_args.append(target)
+    view_args += ["--json", "number,url,title,body,reviewDecision,mergeStateStatus,mergeable,headRefName,headRefOid,mergedAt"]
+    pr_payload = parse_json_stdout(run_real_gh(view_args), "PR metadata")
+    pr_number = pr_payload.get("number")
+    if not pr_number:
+        fail("Symphony GitHub guard could not resolve the PR to merge.")
+
+    template_path = os.path.join(repo_root(), ".github", "pull_request_template.md")
+    body_errors = validation_errors_for_body(pr_payload.get("body"), template_path)
+    if body_errors:
+        fail("\n".join(["Symphony GitHub guard rejected merge because the PR body is incomplete:"] + [f"- {error}" for error in body_errors]))
+
+    checks, blocking_checks = blocking_required_checks(pr_number)
+    if blocking_checks:
+        lines = [f"- {check.get('name', 'unknown')} — {check.get('state', 'unknown')}" for check in blocking_checks]
+        fail("\n".join(["Symphony GitHub guard blocked merge because required checks are not green:"] + lines))
+
+    openreview = ensure_openreview_triggered(pr_payload)
+    if openreview:
+        if openreview.get("pending"):
+            fail(f"Symphony GitHub guard blocked merge because {openreview.get('summary')}")
+        if openreview.get("timed_out"):
+            fail(f"Symphony GitHub guard blocked merge because {openreview.get('summary')}")
+        if openreview.get("blocking_feedback"):
+            fail(f"Symphony GitHub guard blocked merge because {openreview.get('summary')}")
+
+    review_block = blocking_review_state(pr_payload)
+    if review_block:
+        fail(f"Symphony GitHub guard blocked merge because reviewDecision={review_block}.")
+
+    merge_block = blocking_mergeability(pr_payload)
+    if merge_block:
+        fail(f"Symphony GitHub guard blocked merge because mergeStateStatus={merge_block}.")
+
+    result = run_real_gh(["pr", "merge"] + subcommand_args, check=False)
+    if result.stdout:
+        sys.stdout.write(result.stdout)
+    if result.stderr:
+        sys.stderr.write(result.stderr)
+    if result.returncode != 0:
+        sys.exit(result.returncode)
+
+    refreshed_view_args = ["pr", "view", str(pr_number), "--json", "number,url,title,body,headRefName,mergedAt"]
+    merged_payload = parse_json_stdout(run_real_gh(refreshed_view_args), "merged PR metadata")
+    post_linear_comment(merged_payload, checks)
+
+
+def main():
+    args = sys.argv[1:]
+    if len(args) >= 2 and args[0] == "pr" and args[1] in {"create", "edit"}:
+        handle_pr_create_or_edit(args[2:])
+        sys.exit(0)
+    elif len(args) >= 2 and args[0] == "pr" and args[1] == "merge":
+        handle_pr_merge(args[2:])
+        sys.exit(0)
+
+    result = run_real_gh(args, check=False)
+    if result.stdout:
+        sys.stdout.write(result.stdout)
+    if result.stderr:
+        sys.stderr.write(result.stderr)
+    sys.exit(result.returncode)
+
+
+if __name__ == "__main__":
+    main()
