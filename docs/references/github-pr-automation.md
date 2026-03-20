@@ -63,6 +63,12 @@ Keep branch, PR, review-loop, and merge behavior inside the repository workflow 
    gh pr edit "$PR_NUMBER" --title "$PR_TITLE" --body-file "$PR_BODY_FILE"
    ```
 
+7. Ensure OpenReview is triggered for the current PR head.
+
+   ```bash
+   gh pr comment "$PR_NUMBER" --body "@openreview-property-search please review this PR end to end and leave your findings as a GitHub review comment."
+   ```
+
 ## Review and check gathering
 
 Collect all of the following before deciding whether the PR is ready to merge.
@@ -119,6 +125,9 @@ Treat the following as blocking unless GitHub clearly indicates otherwise:
 - pending required checks
 - `reviewDecision` that still requires changes or approval
 - unresolved review threads with actionable requests
+- current-head OpenReview that has not been triggered yet
+- current-head OpenReview that is still pending
+- actionable OpenReview feedback on the current head
 - mergeability or permission failures
 
 Treat the following as non-blocking unless they are tied to required approval or merge policy:
@@ -135,8 +144,9 @@ When there is actionable review or failing required checks that the unattended r
 2. Rerun the narrowest relevant validation for the changed surface area.
 3. Commit with a precise follow-up message.
 4. Push to the same branch.
-5. Re-run the PR inspection steps above.
-6. Repeat until merge conditions are satisfied or the flow is blocked.
+5. Re-trigger OpenReview if the push changed the PR head.
+6. Re-run the PR inspection steps above.
+7. Repeat until merge conditions are satisfied or the flow is blocked.
 
 ## Merge rules
 
@@ -145,6 +155,7 @@ Only merge when all of the following are true:
 - required checks are green
 - no blocking review state remains
 - no unresolved blocking review thread remains
+- OpenReview is satisfied for the current PR head
 - GitHub reports the PR as mergeable
 
 Inspect repository merge settings when you need to choose the merge strategy.
@@ -161,6 +172,15 @@ gh pr merge "$PR_NUMBER" --delete-branch
 
 After merge succeeds, post a final Linear comment that links the merged PR and records the validation/check snapshot used for the unattended handoff.
 
+Keep Linear comments concise and milestone-oriented throughout the same flow:
+
+- implementation started
+- PR created
+- OpenReview requires follow-up changes
+- follow-up changes pushed
+- PR approved or merged
+- workflow blocked
+
 Do not move the Linear issue to `Done` merely because auto-merge or a merge queue was requested. Move it to `Done` only after GitHub reports the PR as merged.
 
 ## Fallback to `In Review`
@@ -170,6 +190,7 @@ If the unattended run cannot complete merge automatically, move the ticket to `I
 - missing GitHub auth
 - insufficient repository or branch permissions
 - unresolved required review
+- unresolved required OpenReview
 - failing or indefinitely pending required checks
 - merge conflict or mergeability state the run cannot resolve safely
 

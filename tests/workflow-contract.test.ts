@@ -11,8 +11,11 @@ describe("workflow contract", () => {
 
     expect(workflow).toContain("create or update exactly one PR");
     expect(workflow).toContain(".github/pull_request_template.md");
-    expect(workflow).toContain("Collect PR review comments, unresolved review threads, review state, mergeability, and required check status.");
+    expect(workflow).toContain("Collect PR review comments, unresolved review threads, review state, mergeability, OpenReview state for the current PR head, and required check status.");
     expect(workflow).toContain("apply the smallest fix on the same branch");
+    expect(workflow).toContain("openreview-property-search");
+    expect(workflow).toContain("OpenReview is satisfied for the current PR head");
+    expect(workflow).toContain("Keep Linear updated with concise milestone comments");
     expect(workflow).toContain("gh pr merge \"$PR_NUMBER\" --delete-branch");
     expect(workflow).toContain("post a final Linear comment");
     expect(workflow).toContain("Move the Linear issue to `Done` only after merge succeeds.");
@@ -29,10 +32,15 @@ describe("workflow contract", () => {
     expect(skill).toContain("Reuse the existing ticket branch and existing PR for that branch when they already exist.");
     expect(runbook).toContain("gh pr list --head \"$CURRENT_BRANCH\" --state open");
     expect(runbook).toContain("gh api graphql");
+    expect(runbook).toContain("@openreview-property-search");
+    expect(runbook).toContain("OpenReview is satisfied for the current PR head");
+    expect(runbook).toContain("milestone-oriented");
     expect(runbook).toContain("gh pr merge \"$PR_NUMBER\" --delete-branch");
     expect(readme).toContain("skills/pr-automation/SKILL.md");
     expect(readme).toContain(".github/pull_request_template.md");
-    expect(agents).toContain("Gather PR review comments, unresolved review threads, review state, and required checks before deciding whether the work is ready to merge.");
+    expect(agents).toContain("Gather PR review comments, unresolved review threads, review state, OpenReview state for the current head, and required checks before deciding whether the work is ready to merge.");
+    expect(agents).toContain("OpenReview state for the current head");
+    expect(agents).toContain("Linear milestone comments");
     expect(agents).toContain("final Linear comment");
   });
 });

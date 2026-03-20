@@ -1,5 +1,36 @@
 # Development Log
 
+## 2026-03-20T15:55:00Z — Symphony OpenReview gating and Linear milestone contract
+
+### What changed
+
+- Updated the Property Search workflow contract so unattended PR runs explicitly configure `github.openreview` for `openreview-property-search`, require current-head OpenReview before merge, and keep the same PR active until OpenReview, review, and required-check gates are all satisfied.
+- Updated the repo guidance and runbook to require concise Linear milestone comments throughout the same PR loop instead of relying only on a final completion comment.
+- Expanded the workflow contract test so the OpenReview trigger, current-head gating, and Linear milestone language stay locked into the repo contract.
+
+### Why it changed
+
+- Symphony now enforces OpenReview and Linear milestone behavior at runtime, so the Property Search repo prompt and runbook need to describe the same gate and comment model instead of a looser generic PR-review loop.
+
+### Files touched
+
+- `WORKFLOW.md`
+- `AGENTS.md`
+- `README.md`
+- `docs/references/github-pr-automation.md`
+- `tests/workflow-contract.test.ts`
+- `docs/DEVELOPMENT_LOG.md`
+
+### Validation performed
+
+- Ran `pnpm test -- tests/workflow-contract.test.ts`.
+- Ran `pnpm typecheck`.
+
+### Validation results
+
+- Workflow contract coverage passed with the new OpenReview and Linear milestone assertions.
+- Repository TypeScript checks remained green after the contract/doc updates.
+
 ## 2026-03-20T14:35:00Z — Ticket 008 fetch/render smoke pipeline foundation
 
 ### What changed
@@ -814,6 +845,22 @@ Block reason:
 ### Blockers
 
 - No implementation blockers remain at the repo level.
+
+## 2026-03-20 — Symphony workspace bootstrap isolation
+
+### What changed
+
+- Removed hard-coded Docker `container_name` values from `docker-compose.yml` so Compose can namespace containers per workspace.
+- Documented that workspace-safe Compose naming is required for unattended Symphony runs that clone the repo into isolated ticket workspaces.
+
+### Validation performed
+
+- Replayed the failing Symphony `RAJ-23` bootstrap log and confirmed the prior failure was a global container-name collision during `docker compose up -d`.
+- Verified the local repo no longer declares fixed `property-search-*` container names.
+
+### Blockers
+
+- Awaiting a fresh Symphony rerun to confirm the disposable validation ticket now clears workspace bootstrap and reaches the PR/OpenReview loop.
 
 ## 2026-03-20 — Ticket 007 status-doc reconciliation
 

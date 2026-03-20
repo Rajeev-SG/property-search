@@ -152,11 +152,14 @@ If a task needs a CLI or MCP tool that is not listed in `docs/cli-tools.md`, say
 - For unattended Symphony work, use one branch per active ticket / PR and reuse it while the PR remains open.
 - Unattended PR bodies must follow `.github/pull_request_template.md` and fill every section with concrete ticket-specific content.
 - After pushing validated work, use `gh` to create or update exactly one PR for the active ticket branch.
-- Gather PR review comments, unresolved review threads, review state, and required checks before deciding whether the work is ready to merge.
-- Apply actionable review or check feedback on the same branch, then commit, push, and re-check the same PR.
+- Trigger `@openreview-property-search` on the PR whenever the latest pushed head has not yet received an OpenReview pass.
+- Gather PR review comments, unresolved review threads, review state, OpenReview state for the current head, and required checks before deciding whether the work is ready to merge.
+- Apply actionable review, OpenReview, or check feedback on the same branch, then commit, push, and re-check the same PR.
+- Do not treat a PR as complete while current-head OpenReview is still pending or while actionable OpenReview feedback remains unresolved.
+- Leave concise Linear milestone comments when implementation starts, when the PR is created, when OpenReview requires more changes, when follow-up changes are pushed, when the PR is approved or merged, and when the workflow is blocked.
 - After merge succeeds, leave a final Linear comment with the merged PR URL plus the validation/check snapshot that justified completion.
 - Prefer finishing the automated flow with PR merge plus remote branch deletion; move a ticket to `Done` only after merge succeeds.
-- Use `In Review` only when merge cannot complete automatically because of unresolved review, failing required checks, missing auth or permissions, or another explicit blocker that the unattended run cannot clear.
+- Use `In Review` only when merge cannot complete automatically because of unresolved review, unresolved OpenReview, failing required checks, missing auth or permissions, or another explicit blocker that the unattended run cannot clear.
 
 ## Documentation and harness maintenance
 

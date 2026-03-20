@@ -59,6 +59,11 @@ codex:
   thread_sandbox: danger-full-access
   turn_sandbox_policy:
     type: dangerFullAccess
+github:
+  openreview:
+    app_slug: "openreview-property-search"
+    trigger_comment: "@openreview-property-search please review this PR end to end and leave your findings as a GitHub review comment."
+    required: true
 
 ---
 
@@ -143,7 +148,7 @@ Read in this order before implementation:
 - Start: if a ticket is in `Todo`, immediately move it to `In Progress` before making changes.
 - Execute: keep the ticket in `In Progress` while reproducing, implementing, validating, and updating docs.
 - Handoff: once scope is complete and validation is green, create or reuse the ticket branch, create a git commit with a precise message, push the ticket branch, and create or update the PR that corresponds to it.
-- Review loop: once a PR exists, inspect review comments, unresolved review threads, review state, and required checks; apply actionable fixes on the same branch; commit, push, and re-check until merge conditions are satisfied or the flow is blocked.
+- Review loop: once a PR exists, inspect review comments, unresolved review threads, review state, OpenReview state for the current PR head, and required checks; apply actionable fixes on the same branch; commit, push, and re-check until merge conditions are satisfied or the flow is blocked.
 - Re-entry: if a prior run stopped in `In Review`, a human may move the ticket back to `In Progress` after new information, changed permissions, or explicit review direction makes another unattended pass worthwhile.
 - Closure: move to `Done` only after merge is actually complete and Symphony runtime reconciliation has confirmed the merged PR, final Linear completion comment, and remote branch deletion state.
 - Blockers: if required secrets, auth, or external permissions are missing, leave the ticket in `In Progress`, record the blocker clearly, and stop.
@@ -157,8 +162,9 @@ Read in this order before implementation:
 - After pushing, create or update the PR for the ticket branch instead of creating multiple competing branches.
 - Reuse an existing PR for the branch if one already exists; do not create multiple PRs for the same ticket branch.
 - Gather PR review comments, review threads, review state, and required check status before deciding whether more fixes are needed.
+- The configured OpenReview app for this repository is `openreview-property-search`; the PR flow must keep that review current for the latest pushed head commit.
 - Apply actionable feedback on the same branch, then commit, push, and re-check the same PR.
-- Merge only when required checks are green and no blocking review state remains.
+- Merge only when required checks are green, no blocking review state remains, and OpenReview is satisfied for the current PR head.
 - If merge succeeds, request remote branch deletion as part of merge and let the terminal-state cleanup remove the isolated workspace.
 - If merge cannot complete automatically because checks, review requirements, permissions, or another explicit blocker remain, move the ticket to `In Review` and stop with a precise blocker summary.
 
@@ -172,13 +178,20 @@ Read in this order before implementation:
 - Look up an existing open PR for the current branch with `gh pr list --head "$CURRENT_BRANCH" --state open --json number,title,body,url,headRefName,baseRefName`.
 - If no open PR exists for the branch, create one with `gh pr create --head "$CURRENT_BRANCH" --base "$DEFAULT_BRANCH" --title "$PR_TITLE" --body-file "$PR_BODY_FILE"`.
 - If an open PR already exists, update it in place with `gh pr edit "$PR_NUMBER" --title "$PR_TITLE" --body-file "$PR_BODY_FILE"` when the title or body is stale.
+- After PR creation or update, ensure OpenReview is triggered by commenting `@openreview-property-search ...` on the PR whenever the current PR head has not been reviewed yet.
 - Inspect PR state with `gh pr view "$PR_NUMBER" --json reviewDecision,reviews,comments,statusCheckRollup,mergeStateStatus,mergeable,title,body,url`.
 - Inspect required checks with `gh pr checks "$PR_NUMBER" --required --json name,bucket,state,workflow,link`.
 - Inspect unresolved review threads with `gh api graphql` against `repository.pullRequest.reviewThreads` so thread-level blockers are not missed.
+- Treat current-head OpenReview as blocking until one of these is true:
+  - OpenReview approved the current head, or
+  - OpenReview reviewed the current head without actionable feedback, or
+  - every actionable OpenReview thread on the current head is resolved or explicitly rebutted with a valid reason.
+- If new commits are pushed after OpenReview reviewed the PR, re-trigger OpenReview for the updated head and do not merge until that refreshed review completes.
 - Distinguish blocking feedback from non-blocking or informational comments where possible; do not churn on pure nits unless they block approval or merge.
 - For actionable feedback or failing checks, apply the smallest fix on the same branch, rerun the narrowest relevant validation, create a precise follow-up commit, push, and re-check the same PR.
 - Repeat the review and fix loop until merge conditions are satisfied or the flow is blocked by review, checks, auth, permissions, or another explicit non-automatable condition.
 - Merge with `gh pr merge "$PR_NUMBER" --delete-branch` only when required checks are green and no blocking review state remains. Use the repository-allowed merge strategy.
+- Keep Linear updated with concise milestone comments when implementation starts, when the PR is created, when OpenReview requires follow-up changes, when follow-up changes are pushed, when the PR is approved or merged, and when the workflow is blocked.
 - After merge succeeds, post a final Linear comment that links the merged PR and records the validation/check snapshot used for the handoff.
 - Move the Linear issue to `Done` only after merge succeeds. Runtime reconciliation must still verify the final comment plus remote branch cleanup before the ticket remains closed.
 - If auth is missing, permissions are insufficient, required review remains unresolved, or checks cannot pass automatically, move the issue to `In Review`, record the exact blocker summary with the PR URL and blocking signals, and stop.
@@ -194,13 +207,14 @@ Read in this order before implementation:
 7. Update any stale docs, examples, setup instructions, workflow docs, status files, or harness metadata that became inaccurate because of the change.
 8. If the task is complete and validation is green, create or reuse the ticket branch and create a git commit with a precise message.
 9. Push the ticket branch, detect whether a PR for that branch already exists, and create or update exactly one PR for it.
-10. Collect PR review comments, unresolved review threads, review state, mergeability, and required check status.
-11. If there is actionable PR feedback or a failing required check that can be addressed automatically, apply the smallest fix on the same branch, rerun the narrowest relevant validation, create a precise follow-up commit, push, and return to the previous step.
-12. Repeat the review and fix loop until merge conditions are satisfied or the flow is blocked by review, checks, auth, permissions, or another explicit non-automatable condition.
-13. Merge with `gh pr merge "$PR_NUMBER" --delete-branch` only when required checks are green and no blocking review state remains.
-14. If merge cannot complete automatically because review requirements, checks, auth, permissions, or another explicit blocker still need human attention, move the issue to `In Review`, record the exact blocker summary with the PR URL and blocking signals, and stop.
-15. Move the Linear issue to `Done` only after merge succeeds and Symphony runtime reconciliation has verified the merged PR, completion comment, and branch cleanup outcome.
-16. Summarize completed work, evidence-backed progress, validation, final ticket state, blockers, and any unresolved risks.
+10. Collect PR review comments, unresolved review threads, review state, mergeability, OpenReview state for the current PR head, and required check status.
+11. If OpenReview has not yet reviewed the current head, trigger or re-trigger `@openreview-property-search` on the same PR and wait for that review before attempting merge.
+12. If there is actionable PR or OpenReview feedback, or a failing required check that can be addressed automatically, apply the smallest fix on the same branch, rerun the narrowest relevant validation, create a precise follow-up commit, push, and return to the previous step.
+13. Repeat the review and fix loop until merge conditions are satisfied or the flow is blocked by review, OpenReview, checks, auth, permissions, or another explicit non-automatable condition.
+14. Merge with `gh pr merge "$PR_NUMBER" --delete-branch` only when required checks are green, no blocking review state remains, and OpenReview is satisfied for the current PR head.
+15. If merge cannot complete automatically because review requirements, OpenReview, checks, auth, permissions, or another explicit blocker still need human attention, move the issue to `In Review`, record the exact blocker summary with the PR URL and blocking signals, and stop.
+16. Move the Linear issue to `Done` only after merge succeeds and Symphony runtime reconciliation has verified the merged PR, completion comment, and branch cleanup outcome.
+17. Summarize completed work, evidence-backed progress, validation, final ticket state, blockers, and any unresolved risks.
 
 ## Default validation commands
 
@@ -219,6 +233,7 @@ For significant implementation work, prefer to include both `pnpm test` and `pnp
 
 - Dependencies are installed with `pnpm install --frozen-lockfile`.
 - Local services start with `docker compose up -d`.
+- `docker-compose.yml` must stay workspace-safe so isolated Symphony clones can boot infra without global container-name conflicts.
 - Repo readiness is checked with `pnpm run doctor`.
 - Repo bootstrap defaults to the local source path `/Users/rajeev/Code/property-search`, cloning from that path when `.git` is available so ticket workspaces remain git-backed.
 - `PROPERTY_SEARCH_REPO_URL` is an optional override for cloning from a remote instead.
