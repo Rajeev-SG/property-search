@@ -8,34 +8,77 @@ importers:
 
   .:
     dependencies:
+      '@property-search/domain':
+        specifier: workspace:*
+        version: link:packages/domain
+      '@property-search/harness':
+        specifier: workspace:*
+        version: link:packages/harness
       ajv:
-        specifier: ^8.17.1
+        specifier: 8.18.0
         version: 8.18.0
       ajv-formats:
-        specifier: ^3.0.1
+        specifier: 3.0.1
         version: 3.0.1(ajv@8.18.0)
       commander:
-        specifier: ^14.0.1
+        specifier: 14.0.3
         version: 14.0.3
       yaml:
-        specifier: ^2.8.1
+        specifier: 2.8.2
         version: 2.8.2
       zod:
-        specifier: ^4.1.5
+        specifier: 4.3.6
         version: 4.3.6
     devDependencies:
       '@types/node':
-        specifier: ^24.3.0
+        specifier: 24.12.0
         version: 24.12.0
       tsx:
-        specifier: ^4.20.5
+        specifier: 4.21.0
         version: 4.21.0
       typescript:
-        specifier: ^5.9.2
+        specifier: 5.9.3
         version: 5.9.3
       vitest:
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(@types/node@24.12.0)(tsx@4.21.0)(yaml@2.8.2)
+
+  apps/cli:
+    dependencies:
+      '@property-search/harness':
+        specifier: workspace:*
+        version: link:../../packages/harness
+      commander:
+        specifier: 14.0.3
+        version: 14.0.3
+
+  packages/adapters:
+    dependencies:
+      zod:
+        specifier: 4.3.6
+        version: 4.3.6
+
+  packages/crawl: {}
+
+  packages/dedupe: {}
+
+  packages/domain:
+    dependencies:
+      zod:
+        specifier: 4.3.6
+        version: 4.3.6
+
+  packages/extract: {}
+
+  packages/harness:
+    dependencies:
+      '@property-search/domain':
+        specifier: workspace:*
+        version: link:../domain
+
+  packages/index: {}
+
+  packages/normalize: {}
 
 packages:
 

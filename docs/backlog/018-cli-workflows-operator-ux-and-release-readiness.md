@@ -45,7 +45,7 @@
 
 ## Test plan
 
-- Run `pnpm doctor`.
+- Run `pnpm run doctor`.
 - Run `pnpm validate:fixture`.
 - Run `pnpm typecheck`.
 - Run `pnpm test`.

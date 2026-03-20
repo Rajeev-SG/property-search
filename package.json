@@ -1,29 +1,33 @@
 {
   "name": "property-search-ingestion",
   "private": true,
-  "packageManager": "pnpm@10.6.0",
+  "packageManager": "pnpm@10.32.1",
   "type": "module",
   "scripts": {
-    "doctor": "tsx scripts/doctor.ts",
-    "plans:list": "tsx scripts/list-plans.ts",
-    "validate:fixture": "tsx scripts/validate-synthetic-fixture.ts",
+    "doctor": "node --import tsx ./scripts/doctor.ts",
+    "plans:list": "node --import tsx ./scripts/list-plans.ts",
+    "validate:fixture": "node --import tsx ./scripts/validate-synthetic-fixture.ts",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "dev": "tsx apps/cli/src/index.ts",
-    "smoke:vendors": "tsx scripts/smoke-external-vendors.ts",
+    "typecheck:workspace": "pnpm --recursive --if-present --filter @property-search/* run typecheck",
+    "dev": "pnpm --filter @property-search/cli run dev",
+    "smoke:cli": "pnpm --filter @property-search/cli run doctor",
+    "smoke:vendors": "node --import tsx ./scripts/smoke-external-vendors.ts",
     "smoke:browser-use": "uv run --with browser-use --with python-dotenv python scripts/browser-use-smoke.py"
   },
   "dependencies": {
-    "ajv": "^8.17.1",
-    "ajv-formats": "^3.0.1",
-    "commander": "^14.0.1",
-    "yaml": "^2.8.1",
-    "zod": "^4.1.5"
+    "@property-search/domain": "workspace:*",
+    "@property-search/harness": "workspace:*",
+    "ajv": "8.18.0",
+    "ajv-formats": "3.0.1",
+    "commander": "14.0.3",
+    "yaml": "2.8.2",
+    "zod": "4.3.6"
   },
   "devDependencies": {
-    "@types/node": "^24.3.0",
-    "tsx": "^4.20.5",
-    "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
+    "@types/node": "24.12.0",
+    "tsx": "4.21.0",
+    "typescript": "5.9.3",
+    "vitest": "3.2.4"
   }
 }

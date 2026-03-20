@@ -43,7 +43,7 @@ After the repairs in this session, the repo is **fit for purpose for future agen
 - **Execution-plan intent existed**
   - The repo already had broad phase plans under `docs/exec-plans/active/`.
 - **Basic harness tooling existed**
-  - `pnpm doctor`
+  - `pnpm run doctor`
   - `pnpm plans:list`
   - `pnpm validate:fixture`
   - `pnpm test`
@@ -230,5 +230,5 @@ The following items remain intentionally deferred to backlog tickets instead of 
 
 ## Required human follow-up after this session
 
-- Run `pnpm install` in the repo root before asking an agent to run TypeScript-based validation commands.
+- Run `pnpm install --frozen-lockfile` in the repo root before asking an agent to run TypeScript-based validation commands.
 - Run `docker compose up -d` before infra-dependent tickets.

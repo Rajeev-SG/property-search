@@ -34,7 +34,6 @@ hooks:
       fi
     else
       rsync -a --delete \
-        --exclude='.git' \
         --exclude='node_modules' \
         --exclude='artifacts' \
         --exclude='.turbo' \
@@ -47,7 +46,7 @@ hooks:
     fi
     pnpm install --frozen-lockfile
     docker compose up -d
-    pnpm doctor
+    pnpm run doctor
   before_remove: |
     docker compose down --remove-orphans || true
 agent:
@@ -174,7 +173,7 @@ Read in this order before implementation:
 
 Use the narrowest relevant set first, then broaden if needed:
 
-- `pnpm doctor`
+- `pnpm run doctor`
 - `pnpm typecheck`
 - `pnpm test`
 - `pnpm validate:fixture`
@@ -187,7 +186,7 @@ For significant implementation work, prefer to include both `pnpm test` and `pnp
 
 - Dependencies are installed with `pnpm install --frozen-lockfile`.
 - Local services start with `docker compose up -d`.
-- Repo readiness is checked with `pnpm doctor`.
+- Repo readiness is checked with `pnpm run doctor`.
 - Repo bootstrap defaults to the local source path `/Users/rajeev/Code/property-search`, cloning from that path when `.git` is available so ticket workspaces remain git-backed.
 - `PROPERTY_SEARCH_REPO_URL` is an optional override for cloning from a remote instead.
 - The long-term raw source input contract is `data/seeds/estate-agents.csv`.

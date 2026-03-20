@@ -11,13 +11,15 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: 10.6.0
+          version: 10.32.1
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: pnpm
-      - run: pnpm install --frozen-lockfile=false
-      - run: pnpm doctor
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run doctor
       - run: pnpm validate:fixture
       - run: pnpm typecheck
+      - run: pnpm run typecheck:workspace
       - run: pnpm test
+      - run: pnpm run smoke:cli
