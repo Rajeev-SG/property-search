@@ -92,7 +92,7 @@ pnpm test
 
 Start from the active ticket recorded in `docs/PROJECT_STATUS.md`.
 
-At the time of writing, the active repo ticket is `003-canonical-schema-and-domain-contract-expansion.md`.
+At the time of writing, the active repo ticket is `004-database-schema-and-migration-baseline.md`.
 
 ## Commands
 

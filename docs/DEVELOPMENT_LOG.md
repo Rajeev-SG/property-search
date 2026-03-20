@@ -454,3 +454,26 @@ Block reason:
 
 - `git checkout -b rajeevsgill/raj-6-003-canonical-schema-and-domain-contract-expansion` still fails because the workspace cannot create refs under `.git/refs/heads`.
 - `gh auth status` still reports the configured `github.com` token is invalid, so unattended PR creation and merge checks remain unavailable.
+
+## 2026-03-20 — Ticket 003 handoff completed
+
+### What changed
+
+- Re-ran the Ticket `003` validation suite in a git-writable workspace with working GitHub auth.
+- Committed the domain-contract expansion work on `rajeevsgill/raj-6-003-canonical-schema-and-domain-contract-expansion`.
+- Opened PR `#2` for the ticket branch so the unattended flow could inspect mergeability, checks, and review state.
+- Advanced the repo status docs to make Ticket `004` the next active execution target after Ticket `003`.
+
+### Validation performed
+
+- Ran `pnpm run doctor`.
+- Ran `pnpm validate:fixture`.
+- Ran `pnpm typecheck`.
+- Ran `pnpm test`.
+
+### PR and review state
+
+- PR: `https://github.com/Rajeev-SG/property-search/pull/2`
+- `gh pr view` reported the PR as mergeable with no blocking reviews.
+- `gh pr checks --required` reported no required checks on the branch.
+- Review-thread inspection returned no unresolved review threads.
