@@ -6,19 +6,19 @@ Build a local-first TypeScript monorepo that ingests estate-agent websites from 
 
 ## Current phase
 
-Ticket `008` is in progress to build the crawl, fetch, and render pipeline on top of the normalized source-registry baseline delivered in Ticket `007`.
+Ticket `009` is the next implementation target to build site profiling and discovery on top of the completed crawl/fetch/render foundation from Ticket `008`.
 
 ## Current active ticket ID
 
-`008`
+`009`
 
 ## Current active ticket status
 
-`in_progress`
+`not_started`
 
 ## Summary of last completed work
 
-Completed Ticket `007` by adding deterministic source-registry ingestion, preserving raw-row provenance in Postgres, emitting ingest reports for unresolved discovery-only rows, and validating the live import path against local Postgres.
+Completed Ticket `008` by wiring the fetch/render smoke path to resolve an enabled `source_registry` row when the local database is ready, preserving deterministic fixture fallback, and keeping raw/rendered/diagnostic artifact persistence plus replayable failure metadata intact.
 
 ## Summary of current blockers
 
@@ -26,13 +26,13 @@ Completed Ticket `007` by adding deterministic source-registry ingestion, preser
 
 ## Exact next recommended action
 
-1. Build from the new Ticket `008` smoke slice by swapping the fixture URL/input over to real `source_registry` rows while keeping the existing run manifest and diagnostics contract intact.
-2. Extend the fetch pipeline from synthetic providers to the first real live-provider path only after the same artifact and failure metadata remain replayable.
-3. Keep provider-specific behavior behind the existing provider registry and validate with targeted crawl/artifact checks before broadening to discovery logic.
+1. Start Ticket `009` by profiling one enabled `source_registry` domain and persisting robots, sitemap, and page-classification evidence under the existing run/artifact contract.
+2. Reuse the Ticket `008` source-selection path so profiling starts from normalized registry rows instead of ad hoc fixture URLs.
+3. Keep discovery evidence and crawl-policy capture replayable before introducing broader pagination or provider-specific behavior.
 
 ## Next-session routing
 
-The next agent should continue `008-crawl-fetch-and-render-pipeline-foundation.md`.
+The next agent should continue `009-site-profiling-and-discovery.md`.
 
 ## Required human actions
 
@@ -40,7 +40,7 @@ The next agent should continue `008-crawl-fetch-and-render-pipeline-foundation.m
 
 ## Last updated timestamp
 
-2026-03-20T14:35:00Z
+2026-03-20T18:28:00Z
 
 ## Source-of-truth note
 

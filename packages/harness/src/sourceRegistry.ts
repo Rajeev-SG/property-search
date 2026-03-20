@@ -62,10 +62,36 @@ export type SourceRegistryImportResult = SourceRegistryImportPlan & {
   reportPath: string;
 };
 
+export type SourceRegistryFetchTarget = {
+  brandName: string;
+  branchName: string | null;
+  homepageUrl: string;
+  rawInputPath: string;
+  rawRowNumber: number;
+  sourceId: string;
+  startUrl: string;
+  validationStatus: string;
+  websiteDomain: string;
+};
+
 type PersistedSourceRow = {
   source_id: string;
   inserted: boolean;
 };
+
+type SourceRegistryFetchTargetRow = {
+  brandName: string;
+  branchName: string | null;
+  homepageUrl: string;
+  rawInputPath: string;
+  rawRowNumber: number;
+  sourceId: string;
+  startUrl: string;
+  validationStatus: string;
+  websiteDomain: string;
+};
+
+type QueryableClient = Pick<Client, "query">;
 
 type ResolvedSourceUrls =
   | {
@@ -390,6 +416,53 @@ function createClient(databaseUrl?: string) {
   return new Client({
     connectionString: databaseUrl ?? process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL
   });
+}
+
+async function querySourceRegistryFetchTarget(
+  client: QueryableClient,
+  sourceId?: string
+): Promise<SourceRegistryFetchTarget | null> {
+  const result = await client.query<SourceRegistryFetchTargetRow>(
+    `
+      SELECT
+        source_id AS "sourceId",
+        brand_name AS "brandName",
+        branch_name AS "branchName",
+        website_domain AS "websiteDomain",
+        homepage_url AS "homepageUrl",
+        start_url AS "startUrl",
+        validation_status AS "validationStatus",
+        raw_input_path AS "rawInputPath",
+        raw_row_number AS "rawRowNumber"
+      FROM source_registry
+      WHERE enabled = true
+        AND ($1::text IS NULL OR source_id = $1)
+      ORDER BY raw_input_path ASC, raw_row_number ASC
+      LIMIT 1
+    `,
+    [sourceId ?? null]
+  );
+
+  return result.rows[0] ?? null;
+}
+
+export async function loadSourceRegistryFetchTarget(options: {
+  client?: QueryableClient;
+  databaseUrl?: string;
+  sourceId?: string;
+} = {}): Promise<SourceRegistryFetchTarget | null> {
+  if (options.client) {
+    return querySourceRegistryFetchTarget(options.client, options.sourceId);
+  }
+
+  const client = createClient(options.databaseUrl);
+  await client.connect();
+
+  try {
+    return await querySourceRegistryFetchTarget(client, options.sourceId);
+  } finally {
+    await client.end();
+  }
 }
 
 async function upsertSourceRegistryRecord(client: Client, record: SourceRegistryRecord) {

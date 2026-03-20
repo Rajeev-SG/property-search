@@ -39,7 +39,7 @@ Use `pnpm artifacts:smoke` when changing the run ledger or filesystem artifact l
 
 ## Crawl/fetch smoke tests
 
-Use `pnpm crawl:smoke` when changing Ticket `008` fetch/render orchestration, provider response persistence, or replay diagnostics. It creates a run manifest plus raw/rendered/diagnostic artifacts through the crawl package instead of the lower-level artifact helpers.
+Use `pnpm crawl:smoke` when changing Ticket `008` fetch/render orchestration, provider response persistence, source-target resolution, or replay diagnostics. It prefers the first enabled `source_registry` row in the local database and falls back to the deterministic fixture only when the registry is unavailable or empty.
 
 ## Eval philosophy
 

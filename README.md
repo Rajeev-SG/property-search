@@ -124,7 +124,7 @@ pnpm test
 
 Start from the active ticket recorded in `docs/PROJECT_STATUS.md`.
 
-At the time of writing, the next repo ticket is `008-crawl-fetch-and-render-pipeline-foundation.md`.
+At the time of writing, the next repo ticket is `009-site-profiling-and-discovery.md`.
 
 ## Commands
 
@@ -135,7 +135,7 @@ At the time of writing, the next repo ticket is `008-crawl-fetch-and-render-pipe
 - `pnpm db:verify` — verify the expected core pipeline tables exist
 - `pnpm db:smoke` — create a fresh temporary database, apply migrations, and verify the baseline schema
 - `pnpm artifacts:smoke` — create a synthetic local run plus manifest under `artifacts/runs/`
-- `pnpm crawl:smoke` — run the Ticket `008` fetch/render smoke path and persist raw/rendered/diagnostic artifacts under `artifacts/runs/`
+- `pnpm crawl:smoke` — run the Ticket `008` fetch/render smoke path against the first enabled `source_registry` row when available, otherwise fall back to the deterministic fixture target and persist raw/rendered/diagnostic artifacts under `artifacts/runs/`
 - `pnpm source-registry:ingest -- --dry-run` — normalize the seed CSV, print import/skip counts, and write the full ingest report under `artifacts/source-registry/ingests/`
 - `pnpm plans:list` — list broad execution plans
 - `pnpm validate:fixture` — validate the synthetic extracted-listing, canonical-property, and search-document fixtures
@@ -172,7 +172,7 @@ OpenRouter note:
 - `skills/pr-automation/SKILL.md` documents the reusable unattended branch, PR, review-loop, and merge flow for Symphony ticket runs.
 - `docs/DEVELOPMENT_LOG.md` is append-only and should be updated whenever significant work is done.
 - `docs/references/openreview-vercel.md` records the current upstream OpenReview Anthropic-only wiring plus the minimal fork plan for an OpenRouter-configurable Vercel deployment.
-- Ticket `008` is now in progress with a fetch/render smoke slice that exercises the provider registry plus run-ledger persistence through `pnpm crawl:smoke`.
+- Ticket `008` now resolves crawl smoke inputs from `source_registry` when the workspace database has imported seed rows, while preserving fixture fallback so fetch/render artifact and failure persistence remain testable without live setup.
 - Symphony ticket runs should create or update exactly one PR for the active ticket branch, build the PR body from `.github/pull_request_template.md`, gather review comments, unresolved threads, and required checks with `gh`, apply actionable fixes on the same branch, and merge only when merge conditions are satisfied.
 - After merge succeeds, the unattended handoff should leave a final Linear comment with the merged PR URL plus the validation/check snapshot used for completion, and Symphony runtime reconciliation should verify that comment plus remote branch cleanup before the ticket stays `Done`.
 - If auth, permissions, unresolved review, or failing required checks block automatic merge, the repository workflow should leave the ticket in `In Review` with a precise blocker summary instead of treating `In Review` as the happy path.

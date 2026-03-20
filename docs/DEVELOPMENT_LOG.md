@@ -1,5 +1,55 @@
 # Development Log
 
+## 2026-03-20T18:28:00Z — Ticket 008 source-registry-backed crawl smoke target
+
+### What changed
+
+- Added a `source_registry` fetch-target lookup helper in `@property-search/harness` so the crawl/fetch smoke path can select a real enabled source row from Postgres.
+- Extended `@property-search/crawl` smoke target resolution to prefer `source_registry` rows, preserve deterministic fixture fallback when the database is unavailable or empty, and surface the chosen target in run metadata and log output.
+- Added CLI and root-script flags for `--fixture`, `--source-id`, and `--require-source-registry` so the unattended flow can force fixture mode, pin a specific source, or fail fast when the registry is expected.
+- Added focused tests for source lookup and smoke target resolution, then updated status and testing docs to reflect that Ticket `008` now closes the planned handoff from source-registry ingestion into fetch/render.
+
+### Why it changed
+
+The previous Ticket `008` slice still hard-coded the smoke URL to `example.com`, while `docs/PROJECT_STATUS.md` explicitly called for swapping the smoke input over to real `source_registry` rows without regressing replayable artifacts or diagnostics. This closes that gap while keeping local deterministic fallback for test coverage and offline runs.
+
+### Files touched
+
+- `README.md`
+- `ARCHITECTURE.md`
+- `apps/cli/src/index.ts`
+- `docs/DEVELOPMENT_LOG.md`
+- `docs/PROJECT_STATUS.md`
+- `docs/RELIABILITY.md`
+- `docs/TESTING.md`
+- `docs/TICKET_INDEX.md`
+- `packages/crawl/src/smoke.ts`
+- `packages/harness/src/sourceRegistry.ts`
+- `scripts/crawl-fetch-smoke.ts`
+- `tests/crawl-fetch-smoke.test.ts`
+- `tests/source-registry-fetch-target.test.ts`
+
+### Validation performed
+
+- Ran `pnpm test -- tests/source-registry-fetch-target.test.ts tests/crawl-fetch-smoke.test.ts tests/crawl-fetch-pipeline.test.ts`.
+- Ran `pnpm typecheck`.
+- Ran `pnpm db:migrate`.
+- Ran `pnpm run doctor`.
+- Ran `pnpm validate:fixture`.
+- Ran `pnpm source-registry:ingest`.
+- Ran `pnpm run typecheck:workspace`.
+- Ran `pnpm test`.
+- Ran `pnpm run smoke:cli`.
+- Ran `pnpm crawl:smoke -- --require-source-registry`.
+
+### Validation results
+
+- Focused source-selection, crawl-smoke, and fetch-pipeline tests: passed.
+- Root and workspace TypeScript no-emit checks: passed.
+- Doctor, synthetic fixture validation, full Vitest suite, and CLI doctor smoke: passed.
+- `pnpm source-registry:ingest` inserted 63 enabled source rows from `data/seeds/estate-agents.csv`.
+- `pnpm crawl:smoke -- --require-source-registry` succeeded against `source_registry` target `src_b82d8a13e317a1d5` with replayable manifest and diagnostics artifacts under `artifacts/runs/2026/03/20/20260320T182309Z-crawl-fetch-render-pipeline-smoke-a75579de6cf6/`.
+
 ## 2026-03-20T14:35:00Z — Ticket 008 fetch/render smoke pipeline foundation
 
 ### What changed

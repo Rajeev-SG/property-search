@@ -32,7 +32,7 @@ Every run should record:
 - error class
 - elapsed time
 
-Ticket `008` smoke runs also emit a diagnostics JSON artifact with one entry per static/render fetch attempt so partial failures remain replayable even when only part of the pipeline succeeds.
+Ticket `008` smoke runs also emit a diagnostics JSON artifact with one entry per static/render fetch attempt and record whether the target came from `source_registry` or the fixture fallback so partial failures remain replayable even when only part of the pipeline succeeds.
 
 ## Database retention notes
 
