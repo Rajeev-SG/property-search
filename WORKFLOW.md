@@ -58,9 +58,12 @@ codex:
   thread_sandbox: danger-full-access
   turn_sandbox_policy:
     type: dangerFullAccess
+
 ---
 
 You are working on a Linear ticket `{{ issue.identifier }}` for the `property-search` repository.
+
+The Codex sandbox is intentionally set to `danger-full-access` here because the earlier `workspace-write` policy blocked `.git/refs` writes plus networked `gh` PR automation steps that this unattended workflow requires. Keep the scope local to this repository workspace and revisit if a narrower policy can reliably preserve the same git/gh handoff behavior.
 
 {% if attempt %}
 Continuation context:

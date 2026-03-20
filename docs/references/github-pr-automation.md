@@ -41,7 +41,13 @@ Keep branch, PR, review-loop, and merge behavior inside the repository workflow 
    gh pr list --head "$CURRENT_BRANCH" --state open --json number,title,body,url,headRefName,baseRefName
    ```
 
-4. If no open PR exists for the branch, create one.
+4. Build the PR body from `.github/pull_request_template.md` and fill every section with concrete ticket-specific detail before calling `gh pr create` or `gh pr edit`.
+
+   ```bash
+   cp .github/pull_request_template.md "$PR_BODY_FILE"
+   ```
+
+5. If no open PR exists for the branch, create one.
 
    ```bash
    gh pr create \
@@ -51,7 +57,7 @@ Keep branch, PR, review-loop, and merge behavior inside the repository workflow 
      --body-file "$PR_BODY_FILE"
    ```
 
-5. If an open PR already exists, update it in place when the title or body is stale.
+6. If an open PR already exists, update it in place when the title or body is stale.
 
    ```bash
    gh pr edit "$PR_NUMBER" --title "$PR_TITLE" --body-file "$PR_BODY_FILE"
@@ -152,6 +158,8 @@ Merge with remote branch deletion as part of completion.
 ```bash
 gh pr merge "$PR_NUMBER" --delete-branch
 ```
+
+After merge succeeds, post a final Linear comment that links the merged PR and records the validation/check snapshot used for the unattended handoff.
 
 Do not move the Linear issue to `Done` merely because auto-merge or a merge queue was requested. Move it to `Done` only after GitHub reports the PR as merged.
 

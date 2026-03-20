@@ -6,6 +6,8 @@
 
 - Added `.github/pull_request_template.md` so unattended PRs have a concrete body structure instead of free-form summaries.
 - Updated `WORKFLOW.md`, `AGENTS.md`, and `README.md` so the repo contract explicitly requires the PR template and a final Linear completion comment after merge.
+- Updated `docs/references/github-pr-automation.md` and `skills/pr-automation/SKILL.md` so the reusable PR automation guidance matches the new template and final-comment requirements.
+- Documented the existing `WORKFLOW.md` sandbox escalation from `workspace-write` to `danger-full-access`, including the rationale that unattended `git` ref writes and networked `gh` operations were blocked under the narrower sandbox.
 - Expanded `tests/workflow-contract.test.ts` so the template and final-comment requirements stay locked into the repo contract.
 
 ### Why it changed
@@ -19,6 +21,8 @@
 - `WORKFLOW.md`
 - `AGENTS.md`
 - `README.md`
+- `docs/references/github-pr-automation.md`
+- `skills/pr-automation/SKILL.md`
 - `tests/workflow-contract.test.ts`
 - `docs/DEVELOPMENT_LOG.md`
 
