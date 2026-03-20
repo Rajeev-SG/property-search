@@ -96,13 +96,29 @@ const crawlCommand = program
 
 crawlCommand
   .command("smoke")
-  .description("Run the fixture-backed fetch/render pipeline smoke path")
+  .description("Run the fetch/render smoke path against source_registry or the fixture fallback")
   .option("--persist-db", "Persist the smoke run ledger to Postgres")
-  .action(async (options: { persistDb?: boolean }) => {
-    await runFetchPipelineSmoke({
-      persistToDatabase: Boolean(options.persistDb)
-    });
-  });
+  .option("--fixture", "Force the deterministic fixture target instead of querying source_registry")
+  .option("--source-id <sourceId>", "Use a specific enabled source_registry row")
+  .option(
+    "--require-source-registry",
+    "Fail instead of falling back to the fixture when source_registry is unavailable"
+  )
+  .action(
+    async (options: {
+      fixture?: boolean;
+      persistDb?: boolean;
+      requireSourceRegistry?: boolean;
+      sourceId?: string;
+    }) => {
+      await runFetchPipelineSmoke({
+        fixture: Boolean(options.fixture),
+        persistToDatabase: Boolean(options.persistDb),
+        requireSourceRegistry: Boolean(options.requireSourceRegistry),
+        sourceId: options.sourceId
+      });
+    }
+  );
 
 const sourcesCommand = program
   .command("sources")

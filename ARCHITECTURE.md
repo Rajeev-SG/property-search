@@ -74,7 +74,7 @@ The system is split into layers:
 - Provider names are configured per role from repo-managed env values.
 - The local harness defaults to `PROVIDER_EXECUTION_MODE=fake`, so the registry resolves to deterministic fake providers even when the configured provider name is Firecrawl, Cloudflare, browser-use, or Bright Data.
 - `PROVIDER_EXECUTION_MODE=auto` only switches a role to a live implementation when credentials are present and that role/provider pair has a registered live factory. Otherwise the registry falls back to the fake implementation and records the reason in the provider summary.
-- Ticket `008` adds a first fetch pipeline slice that calls the static-fetch and render roles, persists the returned response bodies under the run ledger buckets, and writes a replayable diagnostics artifact that captures per-attempt metadata and failures.
+- Ticket `008` adds a first fetch pipeline slice that calls the static-fetch and render roles, persists the returned response bodies under the run ledger buckets, writes a replayable diagnostics artifact that captures per-attempt metadata and failures, and now resolves the smoke target from an enabled `source_registry` row before falling back to the deterministic fixture URL.
 
 ## Data model
 
