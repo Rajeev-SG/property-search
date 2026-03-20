@@ -6,11 +6,11 @@ Build a local-first TypeScript monorepo that ingests estate-agent websites from 
 
 ## Current phase
 
-Ticket `006` is next up to define provider abstraction and env-driven crawl/render/extraction wiring on top of the storage baseline.
+Ticket `007` is next up to ingest the raw estate-agent CSV into the normalized source registry on top of the provider/config baseline.
 
 ## Current active ticket ID
 
-`006`
+`007`
 
 ## Current active ticket status
 
@@ -18,7 +18,7 @@ Ticket `006` is next up to define provider abstraction and env-driven crawl/rend
 
 ## Summary of last completed work
 
-Completed Ticket `005` by adding the `ingestion_runs` ledger table, deterministic per-run artifact path helpers, a checked-in artifact smoke flow, and documentation for the new `artifacts/runs/...` layout.
+Completed Ticket `006` by stabilizing the internal provider role interfaces, adding env-driven provider/runtime resolution, exposing registry summaries in the CLI, and documenting the fake-by-default local execution contract.
 
 ## Summary of current blockers
 
@@ -26,13 +26,13 @@ Completed Ticket `005` by adding the `ingestion_runs` ledger table, deterministi
 
 ## Exact next recommended action
 
-1. Start Ticket `006` by defining stable internal crawl/render/extraction provider interfaces that can reference the new run IDs and artifact paths.
-2. Thread env-driven provider defaults through the CLI and harness without hard-coding vendor behavior into the pipeline stages.
-3. Preserve the local evidence split: run/artifact files on disk, replay metadata in Postgres, and deterministic helpers as the only path generator.
+1. Start Ticket `007` by loading `data/seeds/estate-agents.csv` into the normalized source-registry contract and preserving raw-row provenance.
+2. Reuse the new provider/config registry for any crawl or discovery defaults needed during source ingestion, but keep the ticket focused on registry normalization rather than live fetch behavior.
+3. Preserve the local evidence split: artifact files on disk, replay metadata in Postgres, and deterministic helpers as the only path generator.
 
 ## Next-session routing
 
-The next agent should continue `006-provider-abstraction-and-config-wiring.md`.
+The next agent should continue `007-source-registry-ingestion-and-normalization.md`.
 
 ## Required human actions
 
@@ -40,7 +40,7 @@ The next agent should continue `006-provider-abstraction-and-config-wiring.md`.
 
 ## Last updated timestamp
 
-2026-03-20T04:40:00Z
+2026-03-20T05:29:46Z
 
 ## Source-of-truth note
 

@@ -8,6 +8,9 @@ Recommended for web scraping access from agents:
 - hosted MCP endpoint
 - local `npx`-based server
 
+Repo note:
+- MCP access is optional for ticket `006`. The provider abstraction now defaults to deterministic fake providers, so MCP setup is not required for provider-config tests.
+
 Reference docs:
 - `https://docs.firecrawl.dev/introduction`
 
@@ -30,3 +33,6 @@ Use MCP only when that fits the surrounding toolchain better.
 ## Cloudflare Browser Rendering
 Use official Browser Rendering docs when implementing rendered fetch or crawl provider paths:
 - `https://developers.cloudflare.com/browser-rendering/`
+
+Repo note:
+- The abstraction layer already reserves Cloudflare as a configured provider name for discovery, render, and schema extraction. Live Cloudflare execution still needs an explicit registered factory in a later ticket.

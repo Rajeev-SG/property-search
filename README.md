@@ -124,11 +124,12 @@ pnpm test
 
 Start from the active ticket recorded in `docs/PROJECT_STATUS.md`.
 
-At the time of writing, the next repo ticket is `006-provider-abstraction-and-config-wiring.md`.
+At the time of writing, the next repo ticket is `007-source-registry-ingestion-and-normalization.md`.
 
 ## Commands
 
 - `pnpm run doctor` — validate required repo files and harness readiness
+- `pnpm providers:print` — print the resolved provider defaults, credential availability, runtime mode, and fake/live registry decisions
 - `pnpm db:migrate` — apply deterministic SQL migrations to local Postgres
 - `pnpm db:status` — report applied and pending SQL migrations
 - `pnpm db:verify` — verify the expected core pipeline tables exist

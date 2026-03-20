@@ -10,6 +10,7 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
+      "@property-search/crawl": ["packages/crawl/src/index.ts"],
       "@property-search/domain": ["packages/domain/src/index.ts"],
       "@property-search/harness": ["packages/harness/src/index.ts"]
     },
