@@ -88,3 +88,5 @@ To move from documentation to implementation:
 - patch `lib/agent.ts` plus env handling,
 - deploy that fork to Vercel,
 - validate a real PR review run against a disposable GitHub repository.
+
+For this repository specifically, the installed GitHub App slug is `openreview-property-search`, so PR-trigger comments should mention `@openreview-property-search`.
