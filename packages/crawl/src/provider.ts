@@ -6,6 +6,7 @@ export const browserAutomationProviderNames = ["browseruse", "none"] as const;
 export const escalationProviderNames = ["brightdata", "none"] as const;
 export const providerExecutionModes = ["fake", "auto"] as const;
 export const providerImplementations = ["fake", "live"] as const;
+export const crawlResponseFormats = ["html", "markdown", "json", "text"] as const;
 export const providerCredentialKeys = [
   "brightDataApiKey",
   "brightDataBrowserWs",
@@ -24,6 +25,7 @@ export type BrowserAutomationProviderName = typeof browserAutomationProviderName
 export type EscalationProviderName = typeof escalationProviderNames[number];
 export type ProviderExecutionMode = typeof providerExecutionModes[number];
 export type ProviderImplementation = typeof providerImplementations[number];
+export type CrawlResponseFormat = typeof crawlResponseFormats[number];
 export type ProviderCredentialKey = typeof providerCredentialKeys[number];
 
 export type ProviderRole =
@@ -50,8 +52,13 @@ export interface ProviderDescriptor<TName extends string, TRole extends Provider
 
 export interface CrawlResultArtifact {
   artifactPath: string;
+  content?: string;
+  durationMs?: number;
+  fetchedAt?: string;
+  metadata?: Record<string, unknown>;
   provider: string;
-  responseFormat: "html" | "markdown" | "json" | "text";
+  responseFormat: CrawlResponseFormat;
+  statusCode?: number;
   url: string;
 }
 

@@ -11,6 +11,7 @@
     "db:verify": "node --import tsx ./scripts/db-verify.ts",
     "db:smoke": "node --import tsx ./scripts/db-smoke.ts",
     "artifacts:smoke": "node --import tsx ./scripts/artifact-storage-smoke.ts",
+    "crawl:smoke": "node --import tsx ./scripts/crawl-fetch-smoke.ts",
     "source-registry:ingest": "node --import tsx ./scripts/source-registry-ingest.ts",
     "plans:list": "node --import tsx ./scripts/list-plans.ts",
     "validate:fixture": "node --import tsx ./scripts/validate-synthetic-fixture.ts",

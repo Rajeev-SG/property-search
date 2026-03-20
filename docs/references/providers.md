@@ -114,6 +114,7 @@ Credential expectations:
 
 Current note:
 - Static fetch starts as a deterministic direct HTTP role in the abstraction layer. The fake implementation keeps artifact-path and evidence behavior stable for local tests.
+- Ticket `008` now consumes the static-fetch and render role responses through a shared fetch pipeline that expects provider calls to return response content plus attribution metadata so the pipeline can persist replayable artifacts on disk.
 
 ## Typesense
 Use locally for search indexing and faceting in v1.
