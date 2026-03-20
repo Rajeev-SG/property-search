@@ -4,6 +4,11 @@
 
 Reference target: `vercel-labs/openreview`.
 
+As of 2026-03-20, this note is pinned to upstream `main` commit `672deb21e70e471e0536d5ad7a67c14b8359e97e`, inspected via:
+- [`README.md`](https://github.com/vercel-labs/openreview/blob/672deb21e70e471e0536d5ad7a67c14b8359e97e/README.md)
+- [`lib/agent.ts`](https://github.com/vercel-labs/openreview/blob/672deb21e70e471e0536d5ad7a67c14b8359e97e/lib/agent.ts)
+- [`lib/env.ts`](https://github.com/vercel-labs/openreview/blob/672deb21e70e471e0536d5ad7a67c14b8359e97e/lib/env.ts)
+
 Observed upstream behavior:
 - The upstream README describes OpenReview as "powered by Claude" and documents `ANTHROPIC_API_KEY` as the model credential.
 - `lib/agent.ts` constructs the workflow agent with `model: "anthropic/claude-sonnet-4.6"`.
@@ -65,10 +70,10 @@ The exact model ID should stay deployment-configurable so Vercel env changes do 
 
 ## Validation status
 
-Validated from upstream source inspection:
-- Upstream README currently documents `ANTHROPIC_API_KEY` only.
-- Upstream `lib/agent.ts` currently hard-codes `anthropic/claude-sonnet-4.6`.
-- Upstream `lib/env.ts` does not expose a model-provider seam yet.
+Validated from upstream source inspection on 2026-03-20 against `vercel-labs/openreview@672deb21e70e471e0536d5ad7a67c14b8359e97e`:
+- Upstream [`README.md`](https://github.com/vercel-labs/openreview/blob/672deb21e70e471e0536d5ad7a67c14b8359e97e/README.md) documents `ANTHROPIC_API_KEY` only.
+- Upstream [`lib/agent.ts`](https://github.com/vercel-labs/openreview/blob/672deb21e70e471e0536d5ad7a67c14b8359e97e/lib/agent.ts) hard-codes `anthropic/claude-sonnet-4.6`.
+- Upstream [`lib/env.ts`](https://github.com/vercel-labs/openreview/blob/672deb21e70e471e0536d5ad7a67c14b8359e97e/lib/env.ts) does not expose a model-provider seam yet.
 - OpenRouter's Vercel AI SDK provider supports provider-created model instances such as `openrouter('anthropic/claude-3.5-sonnet')`.
 
 Not yet validated locally:
