@@ -32,6 +32,7 @@ describe("workflow contract", () => {
     const runbook = readRepoFile("docs/references/github-pr-automation.md");
     const readme = readRepoFile("README.md");
     const agents = readRepoFile("AGENTS.md");
+    const workflow = readRepoFile("WORKFLOW.md");
 
     expect(skill).toContain("Read `docs/references/github-pr-automation.md`.");
     expect(skill).toContain("Reuse the existing ticket branch and existing PR for that branch when they already exist.");

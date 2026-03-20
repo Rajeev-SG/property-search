@@ -38,7 +38,8 @@
 ### What changed
 
 - Narrowed the README and workflow wording so "workspace-safe" only promises Compose-managed container-name isolation, not conflict-free fixed host ports across concurrent checkouts.
-- Tightened the GitHub PR automation runbook example so the OpenReview trigger comment is shown as conditional on current-head review state.
+- Tightened the GitHub PR automation runbook example so the OpenReview trigger comment is shown as conditional on current-head review state and restored the explicit `triggered` / `pending` / `satisfied` / `timed_out_or_escalated` lifecycle labels used for Linear milestone evidence.
+- Corrected the repo-local `.symphony/bin/gh` guard in this isolated workspace so it really defaults the OpenReview trigger comment to `@<app-slug>` when only `SYMPHONY_OPENREVIEW_APP_SLUG` is set.
 - Extended the workflow contract test with assertions for the new host-port caveat and idempotent OpenReview trigger example.
 
 ### Why it changed
@@ -51,13 +52,14 @@
 - `WORKFLOW.md`
 - `docs/references/github-pr-automation.md`
 - `tests/workflow-contract.test.ts`
+- `.symphony/bin/gh`
 - `docs/DEVELOPMENT_LOG.md`
 
 ### Validation planned
 
 - Run `pnpm run doctor`.
 - Run `pnpm typecheck`.
-- Run `pnpm test -- tests/workflow-contract.test.ts`.
+- Run `pnpm exec vitest run tests/workflow-contract.test.ts tests/symphony-gh-guard.test.ts`.
 
 ## 2026-03-20T16:10:00Z — RAJ-23 workflow bootstrap remote normalization
 
