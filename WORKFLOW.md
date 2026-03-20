@@ -243,7 +243,7 @@ For significant implementation work, prefer to include both `pnpm test` and `pnp
 
 - Dependencies are installed with `pnpm install --frozen-lockfile`.
 - Local services start with `docker compose up -d`.
-- `docker-compose.yml` must stay workspace-safe so isolated Symphony clones avoid global container-name conflicts; fixed host ports still need per-workspace overrides for true concurrent runs.
+- `docker-compose.yml` must stay workspace-safe in naming terms so isolated Symphony clones avoid global container-name conflicts; fixed host ports still need per-workspace overrides for true concurrent runs.
 - Repo readiness is checked with `pnpm run doctor`.
 - Repo bootstrap defaults to the local source path `/Users/rajeev/Code/property-search`, cloning from that path when `.git` is available so ticket workspaces remain git-backed.
 - `PROPERTY_SEARCH_REPO_URL` is an optional override for cloning from a remote instead.

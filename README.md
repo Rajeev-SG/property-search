@@ -120,7 +120,7 @@ pnpm validate:fixture
 pnpm test
 ```
 
-`docker-compose.yml` intentionally relies on Compose-managed container names so isolated Symphony workspaces avoid container-name collisions with another checkout's `postgres`, `redis`, or `typesense` services. Fixed host ports still conflict across concurrent runs unless you supply per-workspace port overrides.
+`docker-compose.yml` intentionally relies on Compose-managed container names so isolated Symphony workspaces avoid global container-name collisions with another checkout's `postgres`, `redis`, or `typesense` services. That naming isolation does not make concurrent stack startup fully safe: fixed host ports still conflict across simultaneous runs unless you supply per-workspace port overrides.
 
 ## Recommended next implementation move
 

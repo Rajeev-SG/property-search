@@ -46,6 +46,9 @@ describe("workflow contract", () => {
     expect(readme).toContain("skills/pr-automation/SKILL.md");
     expect(readme).toContain(".github/pull_request_template.md");
     expect(readme).toContain("concise Linear milestone comments for the `triggered`, `pending`, and final OpenReview lifecycle state");
+    expect(readme).toContain("That naming isolation does not make concurrent stack startup fully safe");
+    expect(readme).toContain("fixed host ports still conflict across simultaneous runs");
+    expect(workflow).toContain("workspace-safe in naming terms");
     expect(agents).toContain("Gather PR review comments, unresolved review threads, review state, OpenReview state for the current head, and required checks before deciding whether the work is ready to merge.");
     expect(agents).toContain("keep the issue in `In Progress` while that wait state is still within the configured timeout window");
     expect(agents).toContain("OpenReview state for the current head");
