@@ -13,7 +13,11 @@ ISSUE_BRANCH_NAME = "rajeevsgill/raj-23-validate-symphony-openreview-and-linear-
 ISSUE_URL = "https://linear.app/rajeevs-experiments/issue/RAJ-23/validate-symphony-openreview-and-linear-pr-loop"
 LINEAR_ENDPOINT = os.environ.get("SYMPHONY_LINEAR_ENDPOINT", "https://api.linear.app/graphql")
 OPENREVIEW_APP_SLUG = os.environ.get("SYMPHONY_OPENREVIEW_APP_SLUG")
-OPENREVIEW_TRIGGER_COMMENT = os.environ.get("SYMPHONY_OPENREVIEW_TRIGGER_COMMENT")
+OPENREVIEW_TRIGGER_COMMENT = os.environ.get("SYMPHONY_OPENREVIEW_TRIGGER_COMMENT") or (
+    f"@{OPENREVIEW_APP_SLUG}" if OPENREVIEW_APP_SLUG else None
+)
+if not OPENREVIEW_TRIGGER_COMMENT and OPENREVIEW_APP_SLUG:
+    OPENREVIEW_TRIGGER_COMMENT = f"@{OPENREVIEW_APP_SLUG}"
 OPENREVIEW_BOT_LOGIN = f"{OPENREVIEW_APP_SLUG}[bot]" if OPENREVIEW_APP_SLUG else None
 try:
     OPENREVIEW_TIMEOUT_MS = int(os.environ.get("SYMPHONY_OPENREVIEW_TIMEOUT_MS", "600000"))
@@ -500,8 +504,13 @@ def human_feedback_source(source):
 def ensure_openreview_triggered(pr_payload):
     status = openreview_status(pr_payload)
     if status and status.get("needs_trigger"):
+        trigger_comment = OPENREVIEW_TRIGGER_COMMENT or (
+            f"@{OPENREVIEW_APP_SLUG}" if OPENREVIEW_APP_SLUG else None
+        )
+        if not trigger_comment:
+            fail("Symphony GitHub guard could not resolve the OpenReview trigger comment.")
         run_real_gh([
-            "pr", "comment", str(pr_payload.get("number")), "--body", OPENREVIEW_TRIGGER_COMMENT
+            "pr", "comment", str(pr_payload.get("number")), "--body", trigger_comment
         ])
         status["needs_trigger"] = False
         status["pending"] = True
