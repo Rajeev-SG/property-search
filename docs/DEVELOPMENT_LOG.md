@@ -757,6 +757,22 @@ Block reason:
 - `gh pr checks --required` reported no required checks on the branch.
 - Review-thread inspection returned no unresolved review threads.
 
+## 2026-03-20T17:45:00Z — RAJ-26 OpenReview lifecycle validation prep
+
+### What changed
+
+- Clarified `docs/references/github-pr-automation.md` with explicit OpenReview lifecycle labels for unattended PR runs: `triggered`, `pending`, `responded_actionable`, `responded_non_blocking`, and `timed_out_or_escalated`.
+- Documented the minimum Linear milestone comment payload for this workflow: PR URL, trigger timestamp, response timestamp when available, and the final lifecycle classification for the current PR head.
+
+### Validation performed
+
+- Ran `pnpm run doctor`.
+- Ran `pnpm test -- --run tests/workflow-contract.test.ts`.
+
+### Why this change exists
+
+- `RAJ-26` is a disposable unattended validation ticket for verifying that the Symphony OpenReview lifecycle keeps active pending runs in `In Progress` and only falls back to `In Review` on an explicit timeout or blocker.
+
 ## 2026-03-20 — Ticket 007 source-registry importer
 
 ### What changed

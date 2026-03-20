@@ -165,6 +165,23 @@ Do not move the Linear issue to `Done` merely because auto-merge or a merge queu
 
 If current-head OpenReview is still pending but remains within the configured timeout window, keep the issue in `In Progress` and add a Linear milestone comment that makes the active PR wait state visible instead of falling back to `In Review`.
 
+## OpenReview lifecycle visibility
+
+Use explicit lifecycle labels in Linear milestone comments so the unattended run leaves a durable audit trail for the current PR head:
+
+- `triggered`: the PR exists and the `@openreview-property-search` trigger comment was posted; record the PR URL and trigger timestamp immediately.
+- `pending`: OpenReview has not produced a current-head result yet, but the configured timeout window has not expired; keep the issue in `In Progress` and make the wait state visible instead of escalating to `In Review`.
+- `responded_actionable`: OpenReview returned change requests or other blocking feedback for the current head; record the response timestamp, keep working on the same branch, and treat the feedback as blocking until resolved or explicitly satisfied.
+- `responded_non_blocking`: OpenReview returned approval-style or informational feedback for the current head; record the response timestamp and proceed with the normal merge gating rules.
+- `timed_out_or_escalated`: no current-head result arrived before the configured timeout, or another explicit external blocker made further unattended progress unsafe; move the issue to `In Review` with the PR URL, trigger timestamp, latest observed OpenReview state, and timeout or blocker details.
+
+Each milestone comment should capture, in concise form:
+
+- PR URL
+- OpenReview trigger timestamp
+- OpenReview response timestamp when available
+- final lifecycle classification for the current PR head
+
 ## Fallback to `In Review`
 
 If the unattended run cannot complete merge automatically, move the ticket to `In Review` and stop only when there is an explicit blocker such as:
