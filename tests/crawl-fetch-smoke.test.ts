@@ -87,6 +87,25 @@ describe("fetch pipeline smoke target resolution", () => {
     );
   });
 
+  it("falls back to the fixture when source_registry is unavailable", async () => {
+    const target = await resolveFetchPipelineSmokeTarget({
+      loadSourceRegistryTarget: async () => {
+        throw new Error("Connection refused");
+      }
+    });
+
+    expect(target).toEqual({
+      metadata: {
+        fallbackDetail: "Connection refused",
+        fallbackReason: "source_registry_unavailable",
+        selection: "fixture"
+      },
+      pageUrl: "https://example.com/listings/demo-home",
+      sourceId: "fixture-demo-home",
+      targetKind: "fixture"
+    });
+  });
+
   it("fails when a specific source id is requested but missing", async () => {
     await expect(
       resolveFetchPipelineSmokeTarget({
