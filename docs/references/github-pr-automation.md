@@ -163,6 +163,8 @@ After merge succeeds, post a final Linear comment that links the merged PR and r
 
 Do not move the Linear issue to `Done` merely because auto-merge or a merge queue was requested. Move it to `Done` only after GitHub reports the PR as merged.
 
+If current-head OpenReview is still pending but remains within the configured timeout window, keep the issue in `In Progress` and add a Linear milestone comment that makes the active PR wait state visible instead of falling back to `In Review`.
+
 ## Fallback to `In Review`
 
 If the unattended run cannot complete merge automatically, move the ticket to `In Review` and stop only when there is an explicit blocker such as:
