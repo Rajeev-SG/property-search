@@ -1,5 +1,40 @@
 # Development Log
 
+## 2026-03-20T11:55:00Z — Symphony runtime handoff reconciliation and OpenReview deployment findings
+
+### What changed
+
+- Implemented runtime-owned Symphony handoff reconciliation in the Elixir orchestrator so `Done` tickets are rechecked for merged PR state, final Linear completion comment presence, and remote branch cleanup before they remain closed.
+- Extended the Symphony tracker boundary to support issue comment listing and added focused tests for merged recovery, automatable reopen, and human-blocked review routing.
+- Updated the Symphony and `property-search` workflow/readme contract so `tracker.review_state` is explicit and runtime-owned `Done` verification is documented.
+- Added `docs/references/openreview-vercel.md` with the current upstream OpenReview findings: the public app is still Anthropic-specific, so OpenRouter on Vercel requires a fork or upstream change rather than a pure env-only deployment.
+
+### Why it changed
+
+- The unattended ticket flow needed a runtime safety net so a premature state transition to `Done` could be corrected automatically or routed to a human review state instead of silently losing merge/comment/branch cleanup guarantees.
+- The OpenReview follow-up needed a durable decision record showing that upstream OpenReview is not yet provider-configurable and documenting the smallest viable OpenRouter fork path.
+
+### Files touched
+
+- `WORKFLOW.md`
+- `README.md`
+- `docs/DEVELOPMENT_LOG.md`
+- `docs/references/openreview-vercel.md`
+
+### Validation performed
+
+- Ran `mise exec -- mix test test/symphony_elixir/extensions_test.exs test/symphony_elixir/handoff_reconciler_test.exs test/symphony_elixir/core_test.exs` in `/Users/rajeev/Code/tools/symphony/elixir`.
+- Inspected upstream `vercel-labs/openreview` source and docs for the deployment/model-provider path.
+
+### Validation results
+
+- Focused Symphony Elixir handoff tests: passed.
+- Upstream OpenReview source inspection confirmed the app currently documents `ANTHROPIC_API_KEY` and hard-codes `anthropic/claude-sonnet-4.6` in the agent construction path.
+
+### Follow-ups
+
+- If an actual OpenReview implementation change is still wanted, clone or fork the upstream repo locally and patch `lib/agent.ts` plus env handling for OpenRouter before attempting a Vercel deployment.
+
 ## 2026-03-20T05:29:46Z — Ticket 006 provider abstraction and config wiring
 
 ### What changed

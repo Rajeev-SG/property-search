@@ -3,6 +3,7 @@ tracker:
   kind: linear
   api_key: $LINEAR_API_KEY
   project_slug: "property-search-15b283a12982"
+  review_state: "In Review"
   active_states:
     - Todo
     - In Progress
@@ -144,7 +145,7 @@ Read in this order before implementation:
 - Handoff: once scope is complete and validation is green, create or reuse the ticket branch, create a git commit with a precise message, push the ticket branch, and create or update the PR that corresponds to it.
 - Review loop: once a PR exists, inspect review comments, unresolved review threads, review state, and required checks; apply actionable fixes on the same branch; commit, push, and re-check until merge conditions are satisfied or the flow is blocked.
 - Re-entry: if a prior run stopped in `In Review`, a human may move the ticket back to `In Progress` after new information, changed permissions, or explicit review direction makes another unattended pass worthwhile.
-- Closure: move to `Done` only after merge is actually complete.
+- Closure: move to `Done` only after merge is actually complete and Symphony runtime reconciliation has confirmed the merged PR, final Linear completion comment, and remote branch deletion state.
 - Blockers: if required secrets, auth, or external permissions are missing, leave the ticket in `In Progress`, record the blocker clearly, and stop.
 
 ## Ticket git lifecycle
@@ -179,8 +180,8 @@ Read in this order before implementation:
 - Repeat the review and fix loop until merge conditions are satisfied or the flow is blocked by review, checks, auth, permissions, or another explicit non-automatable condition.
 - Merge with `gh pr merge "$PR_NUMBER" --delete-branch` only when required checks are green and no blocking review state remains. Use the repository-allowed merge strategy.
 - After merge succeeds, post a final Linear comment that links the merged PR and records the validation/check snapshot used for the handoff.
-- Move the Linear issue to `Done` only after merge succeeds.
-- If auth is missing, permissions are insufficient, required review remains unresolved, or checks cannot pass automatically, move the issue to `In Review` with a precise blocker summary that includes the PR URL and the exact blocking signals.
+- Move the Linear issue to `Done` only after merge succeeds. Runtime reconciliation must still verify the final comment plus remote branch cleanup before the ticket remains closed.
+- If auth is missing, permissions are insufficient, required review remains unresolved, or checks cannot pass automatically, move the issue to `In Review`, record the exact blocker summary with the PR URL and blocking signals, and stop.
 
 ## Execution flow
 
@@ -198,7 +199,7 @@ Read in this order before implementation:
 12. Repeat the review and fix loop until merge conditions are satisfied or the flow is blocked by review, checks, auth, permissions, or another explicit non-automatable condition.
 13. Merge with `gh pr merge "$PR_NUMBER" --delete-branch` only when required checks are green and no blocking review state remains.
 14. If merge cannot complete automatically because review requirements, checks, auth, permissions, or another explicit blocker still need human attention, move the issue to `In Review`, record the exact blocker summary with the PR URL and blocking signals, and stop.
-15. Move the Linear issue to `Done` only after merge succeeds.
+15. Move the Linear issue to `Done` only after merge succeeds and Symphony runtime reconciliation has verified the merged PR, completion comment, and branch cleanup outcome.
 16. Summarize completed work, evidence-backed progress, validation, final ticket state, blockers, and any unresolved risks.
 
 ## Default validation commands
