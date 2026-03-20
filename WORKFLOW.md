@@ -55,12 +55,15 @@ agent:
 codex:
   command: codex --config shell_environment_policy.inherit=all --config model_reasoning_effort=medium --model gpt-5.4 app-server
   approval_policy: never
-  thread_sandbox: workspace-write
+  thread_sandbox: danger-full-access
   turn_sandbox_policy:
-    type: workspaceWrite
+    type: dangerFullAccess
+
 ---
 
 You are working on a Linear ticket `{{ issue.identifier }}` for the `property-search` repository.
+
+The Codex sandbox is intentionally set to `danger-full-access` here because the earlier `workspace-write` policy blocked `.git/refs` writes plus networked `gh` PR automation steps that this unattended workflow requires. Keep the scope local to this repository workspace and revisit if a narrower policy can reliably preserve the same git/gh handoff behavior.
 
 {% if attempt %}
 Continuation context:
@@ -162,6 +165,7 @@ Read in this order before implementation:
 
 - Prefer `gh` over manual GitHub web flows for PR lookup, creation, editing, review inspection, checks, and merge.
 - Verify GitHub auth before PR operations with `gh auth status`.
+- Build unattended PR bodies from `.github/pull_request_template.md` and keep every section populated with concrete repo-specific details before calling `gh pr create` or `gh pr edit`.
 - Detect the current ticket branch before PR work and keep using that branch for the entire unattended run.
 - Detect the repository default branch with `gh repo view --json defaultBranchRef --jq '.defaultBranchRef.name'` when you need an explicit PR base.
 - Look up an existing open PR for the current branch with `gh pr list --head "$CURRENT_BRANCH" --state open --json number,title,body,url,headRefName,baseRefName`.
@@ -174,6 +178,7 @@ Read in this order before implementation:
 - For actionable feedback or failing checks, apply the smallest fix on the same branch, rerun the narrowest relevant validation, create a precise follow-up commit, push, and re-check the same PR.
 - Repeat the review and fix loop until merge conditions are satisfied or the flow is blocked by review, checks, auth, permissions, or another explicit non-automatable condition.
 - Merge with `gh pr merge "$PR_NUMBER" --delete-branch` only when required checks are green and no blocking review state remains. Use the repository-allowed merge strategy.
+- After merge succeeds, post a final Linear comment that links the merged PR and records the validation/check snapshot used for the handoff.
 - Move the Linear issue to `Done` only after merge succeeds.
 - If auth is missing, permissions are insufficient, required review remains unresolved, or checks cannot pass automatically, move the issue to `In Review` with a precise blocker summary that includes the PR URL and the exact blocking signals.
 

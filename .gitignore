@@ -49,3 +49,5 @@ playwright-report/
 test-results/
 
 property-search-harness-seed.zip
+
+.symphony-logs/
