@@ -726,3 +726,26 @@ Block reason:
 ### Blockers
 
 - No implementation blockers remain at the repo level.
+
+## 2026-03-20 — Ticket 007 status-doc reconciliation
+
+### What changed
+
+- Re-verified the Ticket `007` source-registry importer behavior in the current workspace using both dry-run and live Postgres paths.
+- Corrected stale handoff pointers in `README.md` and `docs/TICKET_INDEX.md` so new sessions route to Ticket `008`, matching `docs/PROJECT_STATUS.md` and the backlog table.
+
+### Validation performed
+
+- Ran `pnpm run doctor`.
+- Ran `pnpm typecheck`.
+- Ran `pnpm test`.
+- Ran `pnpm validate:fixture`.
+- Ran `pnpm source-registry:ingest -- --dry-run`.
+- Ran `docker compose up -d postgres`.
+- Ran `pnpm db:migrate`.
+- Ran `pnpm source-registry:ingest`.
+- Queried Postgres through the running container to confirm `source_registry` still contains 63 rows across 51 domains and that stored records retain `raw_payload` plus `provenance_summary`.
+
+### Blockers
+
+- No implementation blockers remain at the repo level.

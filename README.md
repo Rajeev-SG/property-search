@@ -124,7 +124,7 @@ pnpm test
 
 Start from the active ticket recorded in `docs/PROJECT_STATUS.md`.
 
-At the time of writing, the next repo ticket is `007-source-registry-ingestion-and-normalization.md`.
+At the time of writing, the next repo ticket is `008-crawl-fetch-and-render-pipeline-foundation.md`.
 
 ## Commands
 
