@@ -16,6 +16,9 @@ describe("workflow contract", () => {
     expect(workflow).toContain("Collect PR review comments, unresolved review threads, review state, mergeability, OpenReview state for the current PR head, and required check status.");
     expect(workflow).toContain("apply the smallest fix on the same branch");
     expect(workflow).toContain("openreview-property-search");
+    expect(workflow).toContain("OpenReview `triggered` state in a Linear milestone comment");
+    expect(workflow).toContain("If current-head OpenReview remains pending within the configured timeout window");
+    expect(workflow).toContain("add a `pending` milestone comment instead of falling back to `In Review`");
     expect(workflow).toContain("OpenReview is satisfied for the current PR head");
     expect(workflow).toContain("Keep Linear updated with concise milestone comments");
     expect(workflow).toContain("gh pr merge \"$PR_NUMBER\" --delete-branch");
@@ -35,12 +38,17 @@ describe("workflow contract", () => {
     expect(runbook).toContain("gh pr list --head \"$CURRENT_BRANCH\" --state open");
     expect(runbook).toContain("gh api graphql");
     expect(runbook).toContain("@openreview-property-search");
+    expect(runbook).toContain("OPENREVIEW_CURRENT_HEAD_REVIEWED");
     expect(runbook).toContain("OpenReview is satisfied for the current PR head");
+    expect(runbook).toContain("`triggered`");
+    expect(runbook).toContain("`pending`");
     expect(runbook).toContain("milestone-oriented");
     expect(runbook).toContain("gh pr merge \"$PR_NUMBER\" --delete-branch");
     expect(readme).toContain("skills/pr-automation/SKILL.md");
     expect(readme).toContain(".github/pull_request_template.md");
+    expect(readme).toContain("concise Linear milestone comments for the `triggered`, `pending`, and final OpenReview lifecycle state");
     expect(agents).toContain("Gather PR review comments, unresolved review threads, review state, OpenReview state for the current head, and required checks before deciding whether the work is ready to merge.");
+    expect(agents).toContain("keep the issue in `In Progress` while that wait state is still within the configured timeout window");
     expect(agents).toContain("OpenReview state for the current head");
     expect(agents).toContain("Linear milestone comments");
     expect(agents).toContain("final Linear comment");

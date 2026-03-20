@@ -120,7 +120,7 @@ pnpm validate:fixture
 pnpm test
 ```
 
-`docker-compose.yml` intentionally relies on Compose-managed container names so isolated Symphony workspaces can start their own local stack without colliding with another checkout's `postgres`, `redis`, or `typesense` containers.
+`docker-compose.yml` intentionally relies on Compose-managed container names so isolated Symphony workspaces avoid container-name collisions with another checkout's `postgres`, `redis`, or `typesense` services. Fixed host ports still conflict across concurrent runs unless you supply per-workspace port overrides.
 
 ## Recommended next implementation move
 
@@ -176,7 +176,7 @@ OpenRouter note:
 - `docs/references/openreview-vercel.md` records the current upstream OpenReview Anthropic-only wiring plus the minimal fork plan for an OpenRouter-configurable Vercel deployment.
 - Ticket `008` is now in progress with a fetch/render smoke slice that exercises the provider registry plus run-ledger persistence through `pnpm crawl:smoke`.
 - Symphony ticket runs should create or update exactly one PR for the active ticket branch, build the PR body from `.github/pull_request_template.md`, trigger `@openreview-property-search` for the current PR head, gather review comments, unresolved threads, OpenReview state, and required checks with `gh`, apply actionable fixes on the same branch, and merge only when merge conditions are satisfied.
-- While that PR loop is active, Symphony should leave concise Linear milestone comments when implementation starts, when the PR is created, when OpenReview requires follow-up changes, when follow-up commits are pushed, when the PR is approved or merged, and when the workflow is blocked.
+- While that PR loop is active, Symphony should leave concise Linear milestone comments for the `triggered`, `pending`, and final OpenReview lifecycle state, plus the PR URL and timestamps needed to show whether the current head is still waiting or ready to merge.
 - After merge succeeds, the unattended handoff should leave a final Linear comment with the merged PR URL plus the validation/check snapshot used for completion, and Symphony runtime reconciliation should verify that comment plus remote branch cleanup before the ticket stays `Done`.
 - If auth, permissions, unresolved review, unresolved OpenReview, or failing required checks block automatic merge, the repository workflow should leave the ticket in `In Review` with a precise blocker summary instead of treating `In Review` as the happy path.
 - The repository workflow owns commit, push, PR, merge, and fallback review behavior; Symphony itself should remain the scheduler and observability surface.

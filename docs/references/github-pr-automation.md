@@ -47,6 +47,8 @@ Keep branch, PR, review-loop, and merge behavior inside the repository workflow 
    cp .github/pull_request_template.md "$PR_BODY_FILE"
    ```
 
+   For this repository, if `SYMPHONY_OPENREVIEW_TRIGGER_COMMENT` is unset but `SYMPHONY_OPENREVIEW_APP_SLUG` is available, the repo-local `.symphony/bin/gh` guard defaults the trigger comment to `@<app-slug>` so PR creation or update can still trigger the installed OpenReview app.
+
 5. If no open PR exists for the branch, create one.
 
    ```bash
@@ -63,10 +65,12 @@ Keep branch, PR, review-loop, and merge behavior inside the repository workflow 
    gh pr edit "$PR_NUMBER" --title "$PR_TITLE" --body-file "$PR_BODY_FILE"
    ```
 
-7. Ensure OpenReview is triggered for the current PR head.
+7. If OpenReview has not reviewed the current PR head yet, trigger it.
 
    ```bash
-   gh pr comment "$PR_NUMBER" --body "@openreview-property-search please review this PR end to end and leave your findings as a GitHub review comment."
+   if [ "${OPENREVIEW_CURRENT_HEAD_REVIEWED:-false}" != "true" ]; then
+     gh pr comment "$PR_NUMBER" --body "@openreview-property-search please review this PR end to end and leave your findings as a GitHub review comment."
+   fi
    ```
 
 ## Review and check gathering

@@ -187,6 +187,7 @@ Read in this order before implementation:
 - If no open PR exists for the branch, create one with `gh pr create --head "$CURRENT_BRANCH" --base "$DEFAULT_BRANCH" --title "$PR_TITLE" --body-file "$PR_BODY_FILE"`.
 - If an open PR already exists, update it in place with `gh pr edit "$PR_NUMBER" --title "$PR_TITLE" --body-file "$PR_BODY_FILE"` when the title or body is stale.
 - After PR creation or update, ensure OpenReview is triggered by commenting `@openreview-property-search ...` on the PR whenever the current PR head has not been reviewed yet.
+- Record the OpenReview `triggered` state in a Linear milestone comment with the PR URL and trigger timestamp as soon as that trigger comment is posted.
 - Inspect PR state with `gh pr view "$PR_NUMBER" --json reviewDecision,reviews,comments,statusCheckRollup,mergeStateStatus,mergeable,title,body,url`.
 - Inspect required checks with `gh pr checks "$PR_NUMBER" --required --json name,bucket,state,workflow,link`.
 - Inspect unresolved review threads with `gh api graphql` against `repository.pullRequest.reviewThreads` so thread-level blockers are not missed.
@@ -195,11 +196,12 @@ Read in this order before implementation:
   - OpenReview reviewed the current head without actionable feedback, or
   - every actionable OpenReview thread on the current head is resolved or explicitly rebutted with a valid reason.
 - If new commits are pushed after OpenReview reviewed the PR, re-trigger OpenReview for the updated head and do not merge until that refreshed review completes.
+- If current-head OpenReview remains pending within the configured timeout window, keep the same PR active, keep the Linear issue in `In Progress`, and add a `pending` milestone comment instead of falling back to `In Review`.
 - Distinguish blocking feedback from non-blocking or informational comments where possible; do not churn on pure nits unless they block approval or merge.
 - For actionable feedback or failing checks, apply the smallest fix on the same branch, rerun the narrowest relevant validation, create a precise follow-up commit, push, and re-check the same PR.
 - Repeat the review and fix loop until merge conditions are satisfied or the flow is blocked by review, checks, auth, permissions, or another explicit non-automatable condition.
 - Merge with `gh pr merge "$PR_NUMBER" --delete-branch` only when required checks are green and no blocking review state remains. Use the repository-allowed merge strategy.
-- Keep Linear updated with concise milestone comments when implementation starts, when the PR is created, when OpenReview requires follow-up changes, when follow-up changes are pushed, when the PR is approved or merged, and when the workflow is blocked.
+- Keep Linear updated with concise milestone comments when implementation starts, when the PR is created, when OpenReview is `triggered`, when OpenReview remains `pending`, when OpenReview requires follow-up changes, when follow-up changes are pushed, when the PR is approved or merged, and when the workflow is blocked.
 - After merge succeeds, post a final Linear comment that links the merged PR and records the validation/check snapshot used for the handoff.
 - Move the Linear issue to `Done` only after merge succeeds. Runtime reconciliation must still verify the final comment plus remote branch cleanup before the ticket remains closed.
 - If auth is missing, permissions are insufficient, required review remains unresolved, or checks cannot pass automatically, move the issue to `In Review`, record the exact blocker summary with the PR URL and blocking signals, and stop.
@@ -241,7 +243,7 @@ For significant implementation work, prefer to include both `pnpm test` and `pnp
 
 - Dependencies are installed with `pnpm install --frozen-lockfile`.
 - Local services start with `docker compose up -d`.
-- `docker-compose.yml` must stay workspace-safe so isolated Symphony clones can boot infra without global container-name conflicts.
+- `docker-compose.yml` must stay workspace-safe so isolated Symphony clones avoid global container-name conflicts; fixed host ports still need per-workspace overrides for true concurrent runs.
 - Repo readiness is checked with `pnpm run doctor`.
 - Repo bootstrap defaults to the local source path `/Users/rajeev/Code/property-search`, cloning from that path when `.git` is available so ticket workspaces remain git-backed.
 - `PROPERTY_SEARCH_REPO_URL` is an optional override for cloning from a remote instead.
