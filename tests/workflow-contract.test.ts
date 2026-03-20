@@ -7,7 +7,7 @@ const readRepoFile = (relativePath: string) =>
 
 describe("workflow contract", () => {
   it("encodes unattended PR automation requirements in WORKFLOW.md", () => {
-    const workflow = readRepoFile("WORKFLOW.md");
+    const workflowDoc = readRepoFile("WORKFLOW.md");
 
     expect(workflow).toContain("create or update exactly one PR");
     expect(workflow).toContain(".github/pull_request_template.md");
@@ -25,7 +25,7 @@ describe("workflow contract", () => {
     expect(workflow).toContain("post a final Linear comment");
     expect(workflow).toContain("Move the Linear issue to `Done` only after merge succeeds.");
     expect(workflow).toContain("move the issue to `In Review`, record the exact blocker summary with the PR URL and blocking signals, and stop.");
-    expect(workflow).toContain("workspace-safe in naming terms");
+    expect(workflowDoc).toContain("workspace-safe in naming terms");
   });
 
   it("documents the reusable PR automation guidance", () => {
