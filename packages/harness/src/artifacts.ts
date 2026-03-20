@@ -134,17 +134,36 @@ function compactTimestamp(isoTimestamp: string) {
 }
 
 export function sanitizeArtifactSegment(value: string, maxLength: number = 48) {
-  const sanitized = value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .replace(/-{2,}/g, "-");
+  const lowercaseValue = value.toLowerCase();
+  let sanitized = "";
+  let previousWasDash = false;
+
+  for (const character of lowercaseValue) {
+    const isLowercaseLetter = character >= "a" && character <= "z";
+    const isDigit = character >= "0" && character <= "9";
+
+    if (isLowercaseLetter || isDigit) {
+      sanitized += character;
+      previousWasDash = false;
+      continue;
+    }
+
+    if (!previousWasDash && sanitized.length > 0) {
+      sanitized += "-";
+      previousWasDash = true;
+    }
+  }
+
+  while (sanitized.endsWith("-")) {
+    sanitized = sanitized.slice(0, -1);
+  }
 
   if (sanitized.length === 0) {
     return "item";
   }
 
-  return sanitized.slice(0, maxLength).replace(/-+$/g, "") || "item";
+  const truncated = sanitized.slice(0, maxLength);
+  return truncated.endsWith("-") ? truncated.slice(0, -1) || "item" : truncated;
 }
 
 function createArtifactHash(parts: Array<string | undefined>) {
