@@ -9,6 +9,7 @@
     "db:status": "node --import tsx ./scripts/db-status.ts",
     "db:verify": "node --import tsx ./scripts/db-verify.ts",
     "db:smoke": "node --import tsx ./scripts/db-smoke.ts",
+    "artifacts:smoke": "node --import tsx ./scripts/artifact-storage-smoke.ts",
     "plans:list": "node --import tsx ./scripts/list-plans.ts",
     "validate:fixture": "node --import tsx ./scripts/validate-synthetic-fixture.ts",
     "test": "vitest run",

@@ -6,19 +6,19 @@ Build a local-first TypeScript monorepo that ingests estate-agent websites from 
 
 ## Current phase
 
-Ticket `004` is in progress to establish the initial Postgres schema and deterministic migration flow for the core pipeline records.
+Ticket `006` is next up to define provider abstraction and env-driven crawl/render/extraction wiring on top of the storage baseline.
 
 ## Current active ticket ID
 
-`004`
+`006`
 
 ## Current active ticket status
 
-`in_progress`
+`not_started`
 
 ## Summary of last completed work
 
-Completed Ticket `003` by splitting the overloaded property contract into explicit extracted-listing, canonical-property, and search-document schemas, adding fixture and JSON-schema validation coverage, and aligning the architecture and product docs with the new boundaries.
+Completed Ticket `005` by adding the `ingestion_runs` ledger table, deterministic per-run artifact path helpers, a checked-in artifact smoke flow, and documentation for the new `artifacts/runs/...` layout.
 
 ## Summary of current blockers
 
@@ -26,13 +26,13 @@ Completed Ticket `003` by splitting the overloaded property contract into explic
 
 ## Exact next recommended action
 
-1. Finish Ticket `004` by validating the migration runner, baseline tables, and schema smoke checks against local Postgres.
-2. Keep the domain-contract fixtures and validation commands green while landing the database baseline.
-3. Preserve lineage, evidence, and canonical/search boundary semantics introduced in Ticket `003`.
+1. Start Ticket `006` by defining stable internal crawl/render/extraction provider interfaces that can reference the new run IDs and artifact paths.
+2. Thread env-driven provider defaults through the CLI and harness without hard-coding vendor behavior into the pipeline stages.
+3. Preserve the local evidence split: run/artifact files on disk, replay metadata in Postgres, and deterministic helpers as the only path generator.
 
 ## Next-session routing
 
-The next agent should continue `004-database-schema-and-migration-baseline.md`.
+The next agent should continue `006-provider-abstraction-and-config-wiring.md`.
 
 ## Required human actions
 
@@ -40,7 +40,7 @@ The next agent should continue `004-database-schema-and-migration-baseline.md`.
 
 ## Last updated timestamp
 
-2026-03-20T04:30:00Z
+2026-03-20T04:40:00Z
 
 ## Source-of-truth note
 

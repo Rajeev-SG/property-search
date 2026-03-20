@@ -10,6 +10,7 @@ const MIGRATION_LOCK_KEY = 4004;
 export const expectedCoreTables = [
   "source_registry",
   "site_profiles",
+  "ingestion_runs",
   "raw_page_artifacts",
   "extracted_listings",
   "canonical_properties",

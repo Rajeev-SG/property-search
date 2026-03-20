@@ -1,5 +1,58 @@
 # Development Log
 
+## 2026-03-20T04:40:00Z — Ticket 005 run ledger and local artifact storage foundation
+
+### What changed
+
+- Added `db/migrations/002_run_ledger_foundation.sql` to create the `ingestion_runs` table and link `raw_page_artifacts` back to a run ledger row.
+- Added `packages/harness/src/artifacts.ts` with deterministic run IDs, per-run artifact directory helpers, run manifest writing, artifact registration helpers, and Postgres upsert support for run metadata.
+- Added `pnpm artifacts:smoke`, `scripts/artifact-storage-smoke.ts`, and a matching CLI command so the repo can create a synthetic local run under `artifacts/runs/...` for validation.
+- Added artifact storage tests and updated migration expectations for the new core table.
+- Updated README, architecture, reliability, testing, migration, and status docs so the checked-in storage contract matches the implementation.
+
+### Why it changed
+
+Ticket `005` requires deterministic local artifact persistence and run metadata capture so later crawl, extraction, and replay failures can be inspected without inventing ad hoc storage conventions.
+
+### Files touched
+
+- `package.json`
+- `apps/cli/package.json`
+- `apps/cli/src/index.ts`
+- `db/migrations/README.md`
+- `db/migrations/002_run_ledger_foundation.sql`
+- `packages/harness/src/artifacts.ts`
+- `packages/harness/src/database.ts`
+- `packages/harness/src/index.ts`
+- `scripts/artifact-storage-smoke.ts`
+- `tests/artifact-storage.test.ts`
+- `tests/database-migrations.test.ts`
+- `README.md`
+- `ARCHITECTURE.md`
+- `docs/RELIABILITY.md`
+- `docs/TESTING.md`
+- `docs/PROJECT_STATUS.md`
+- `docs/TICKET_INDEX.md`
+- `docs/DEVELOPMENT_LOG.md`
+
+### Validation performed
+
+- Ran `docker compose up -d`.
+- Ran `pnpm run doctor`.
+- Ran `pnpm validate:fixture`.
+- Ran `pnpm typecheck`.
+- Ran `pnpm run typecheck:workspace`.
+- Ran `pnpm run smoke:cli`.
+- Ran `pnpm artifacts:smoke`.
+- Ran `pnpm db:smoke`.
+- Ran `pnpm test`.
+- Inspected `artifacts/runs/2026/03/20/20260320T043339Z-artifact-storage-foundation-83e23be4fbb3/run.json`.
+
+### Validation results
+
+- Doctor, fixture validation, root and workspace typechecks, CLI smoke, fresh-database migration smoke, and full Vitest suite: passed.
+- Artifact smoke created the expected nested run layout plus manifest and sample raw/rendered/extracted/diagnostic files under `artifacts/runs/...`.
+
 ## 2026-03-20T04:30:00Z — Ticket 004 database baseline in progress
 
 ### What changed

@@ -65,12 +65,34 @@ Important:
 
 ## Database baseline
 
-Ticket `004` establishes the first checked-in Postgres schema baseline.
+Tickets `004` and `005` establish the first checked-in Postgres persistence baseline.
 
 - SQL migrations live in `db/migrations/`
 - the migration runner records applied files in `schema_migrations`
-- raw page evidence stays on disk under `artifacts/`; Postgres stores metadata, hashes, crawl policy, and artifact paths
+- `ingestion_runs` records run-level metadata plus deterministic artifact directories and manifest paths
+- raw page evidence stays on disk under `artifacts/`; Postgres stores metadata, hashes, crawl policy, run IDs, and artifact paths
 - use `pnpm db:smoke` when you need a clean migration validation without reusing the default local database
+
+## Local artifact storage baseline
+
+Ticket `005` standardizes local evidence under deterministic per-run directories:
+
+```text
+artifacts/
+  runs/
+    YYYY/
+      MM/
+        DD/
+          <run-id>/
+            raw/
+            rendered/
+            extracted/
+            screenshots/
+            diagnostics/
+            run.json
+```
+
+`run.json` is the run manifest for that execution. It records the run ID, provider, URL scope, status, timestamps, bucket directories, individual artifact paths, and failure metadata needed for replay or diagnosis.
 
 ## Local-only design constraints in this seed
 
@@ -102,7 +124,7 @@ pnpm test
 
 Start from the active ticket recorded in `docs/PROJECT_STATUS.md`.
 
-At the time of writing, the active repo ticket is `004-database-schema-and-migration-baseline.md`.
+At the time of writing, the next repo ticket is `006-provider-abstraction-and-config-wiring.md`.
 
 ## Commands
 
@@ -111,6 +133,7 @@ At the time of writing, the active repo ticket is `004-database-schema-and-migra
 - `pnpm db:status` — report applied and pending SQL migrations
 - `pnpm db:verify` — verify the expected core pipeline tables exist
 - `pnpm db:smoke` — create a fresh temporary database, apply migrations, and verify the baseline schema
+- `pnpm artifacts:smoke` — create a synthetic local run plus manifest under `artifacts/runs/`
 - `pnpm plans:list` — list broad execution plans
 - `pnpm validate:fixture` — validate the synthetic extracted-listing, canonical-property, and search-document fixtures
 - `pnpm test` — run tests

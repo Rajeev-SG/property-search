@@ -1,6 +1,7 @@
 import { Command } from "commander";
 import {
   applyMigrations,
+  runArtifactStorageSmoke,
   printMigrationStatus,
   listPlans,
   runDoctor,
@@ -59,6 +60,20 @@ dbCommand
   .description("Verify that the expected core pipeline tables exist")
   .action(async () => {
     await verifyDatabaseSchema();
+  });
+
+const artifactsCommand = program
+  .command("artifacts")
+  .description("Artifact storage and run-ledger helpers");
+
+artifactsCommand
+  .command("smoke")
+  .description("Create a synthetic local run with deterministic artifact paths")
+  .option("--persist-db", "Persist the smoke run ledger to Postgres")
+  .action(async (options: { persistDb?: boolean }) => {
+    await runArtifactStorageSmoke({
+      persistToDatabase: Boolean(options.persistDb)
+    });
   });
 
 await program.parseAsync(process.argv);
