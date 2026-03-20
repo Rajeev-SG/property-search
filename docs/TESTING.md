@@ -41,6 +41,10 @@ Use `pnpm artifacts:smoke` when changing the run ledger or filesystem artifact l
 
 Use `pnpm crawl:smoke` when changing Ticket `008` fetch/render orchestration, provider response persistence, source-target resolution, or replay diagnostics. It prefers the first enabled `source_registry` row in the local database and falls back to the deterministic fixture only when the registry is unavailable or empty.
 
+## Workflow guard tests
+
+Use `pnpm test -- --run tests/symphony-gh-guard.test.ts` when changing the Symphony-isolated `.symphony/bin/gh` wrapper or the unattended PR/OpenReview/Linear handoff contract. The guard test runs in workspaces where Symphony has materialized that wrapper and exercises OpenReview trigger posting on PR updates, pending-review merge blocking for the current PR head, and the final Linear completion comment emitted after a successful merge.
+
 ## Eval philosophy
 
 - gold examples live in the repo

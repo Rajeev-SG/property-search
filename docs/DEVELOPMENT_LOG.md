@@ -1,5 +1,35 @@
 # Development Log
 
+## 2026-03-20T18:40:00Z — RAJ-23 Symphony gh guard regression coverage
+
+### What changed
+
+- Added `tests/symphony-gh-guard.test.ts` to exercise the Symphony-isolated `.symphony/bin/gh` wrapper with a fake `gh` binary and a local HTTP stub instead of relying on live GitHub or Linear side effects.
+- Covered the three RAJ-23 workflow checkpoints that were previously only validated manually: OpenReview trigger comments after PR updates, merge blocking while current-head OpenReview is still pending, and the final Linear completion comment posted after a successful merge.
+- Updated `docs/TESTING.md` so future workflow changes point at the dedicated guard regression command instead of relying only on broader Vitest or manual PR validation.
+
+### Why it changed
+
+`RAJ-23` is a disposable validation ticket for the unattended branch/PR/OpenReview/Linear loop. The guard logic already existed on `main`, but the repo did not yet preserve deterministic regression coverage for that handoff path, which made the validation evidence too dependent on live GitHub state.
+
+### Files touched
+
+- `tests/symphony-gh-guard.test.ts`
+- `docs/TESTING.md`
+- `docs/DEVELOPMENT_LOG.md`
+
+### Validation performed
+
+- Ran `pnpm run doctor`
+- Ran `pnpm typecheck`
+- Ran `pnpm test -- --run tests/symphony-gh-guard.test.ts tests/workflow-contract.test.ts`
+
+### Validation results
+
+- Doctor: passed.
+- TypeScript no-emit check: passed.
+- Focused Vitest coverage for the workflow contract plus the new `.symphony/bin/gh` guard scenarios: passed.
+
 ## 2026-03-20T18:38:00Z — Ticket 008 PR follow-up hardening
 
 ### What changed
