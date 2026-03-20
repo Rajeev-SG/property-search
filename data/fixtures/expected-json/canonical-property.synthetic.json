@@ -1,0 +1,40 @@
+{
+  "record_type": "canonical_property",
+  "property_id": "prop-example-estates-123-river-view-london-n1",
+  "source_listing_refs": [
+    {
+      "source_domain": "example-estates.co.uk",
+      "source_url": "https://www.example-estates.co.uk/property/123-river-view-london-n1",
+      "listing_id": "123-river-view-london-n1"
+    }
+  ],
+  "source_domains": [
+    "example-estates.co.uk"
+  ],
+  "agent_names": [
+    "Example Estates"
+  ],
+  "sale_or_rent": "sale",
+  "listing_status": "available",
+  "price_amount": 650000,
+  "price_currency": "GBP",
+  "price_frequency": "total",
+  "address_full": "River View, London N1",
+  "postcode": "N1",
+  "property_type": "flat",
+  "bedrooms": 2,
+  "bathrooms": 1,
+  "tenure": "unknown",
+  "summary": "Bright two-bedroom flat close to transport.",
+  "feature_tags": [
+    "close to transport"
+  ],
+  "image_urls": [],
+  "floorplan_urls": [],
+  "dedupe_key": "uk|example-estates.co.uk|river-view-london-n1|flat|sale",
+  "listing_count": 1,
+  "evidence_count": 2,
+  "extraction_confidence": 0.91,
+  "first_seen_at": "2026-03-20T00:00:00Z",
+  "last_seen_at": "2026-03-20T00:00:00Z"
+}

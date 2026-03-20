@@ -92,13 +92,13 @@ pnpm test
 
 Start from the active ticket recorded in `docs/PROJECT_STATUS.md`.
 
-At the time of writing, the active repo ticket is `003-canonical-schema-and-domain-contract-expansion.md`.
+At the time of writing, the active repo ticket is `004-database-schema-and-migration-baseline.md`.
 
 ## Commands
 
 - `pnpm run doctor` — validate required repo files and harness readiness
 - `pnpm plans:list` — list broad execution plans
-- `pnpm validate:fixture` — validate the synthetic canonical fixture
+- `pnpm validate:fixture` — validate the synthetic extracted-listing, canonical-property, and search-document fixtures
 - `pnpm test` — run tests
 - `pnpm typecheck` — run TypeScript no-emit checks
 - `pnpm run typecheck:workspace` — run package-level typechecks across the workspace

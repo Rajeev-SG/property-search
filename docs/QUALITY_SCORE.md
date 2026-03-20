@@ -7,7 +7,9 @@ Measure extraction reliability per domain and per extractor path.
 ## Proposed score dimensions
 
 - field completeness
-- canonical schema validity
+- extracted-listing schema validity
+- canonical-property lineage completeness
+- search-document projection completeness
 - source evidence coverage
 - duplicate rate
 - stale listing rate
@@ -17,9 +19,12 @@ Measure extraction reliability per domain and per extractor path.
 
 ## Golden thresholds for v1
 
-- canonical schema validity: 100% on gold fixtures
+- extracted-listing schema validity: 100% on gold fixtures
+- canonical-property fixture validity: 100% on gold fixtures
+- search-document fixture validity: 100% on gold fixtures
 - price extraction completeness: >= 95% on gold fixtures
 - address extraction completeness: >= 95% on gold fixtures
+- listing evidence coverage for price and address: 100% on gold fixtures
 - page classification precision: >= 95% on gold fixtures
 - unexplained extractor failures: 0 in CI fixtures
 
@@ -29,6 +34,8 @@ Per domain:
 - total pages examined
 - candidate detail pages found
 - listings extracted
-- schema-valid listings
+- extracted-listing valid records
+- canonical-property valid records
+- search-document valid records
 - average extraction confidence
 - top failure reasons
