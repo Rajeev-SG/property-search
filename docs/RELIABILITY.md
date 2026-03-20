@@ -28,3 +28,9 @@ Every run should record:
 - artifact file paths
 - error class
 - elapsed time
+
+## Database retention notes
+
+- Postgres stores metadata, hashes, crawl-policy signals, and filesystem paths to raw artifacts.
+- Raw HTML, rendered HTML, markdown, JSON payloads, and screenshots remain on disk under `artifacts/`.
+- This split keeps the database replayable without embedding large opaque blobs in the core pipeline tables.

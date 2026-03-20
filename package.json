@@ -5,6 +5,10 @@
   "type": "module",
   "scripts": {
     "doctor": "node --import tsx ./scripts/doctor.ts",
+    "db:migrate": "node --import tsx ./scripts/db-migrate.ts",
+    "db:status": "node --import tsx ./scripts/db-status.ts",
+    "db:verify": "node --import tsx ./scripts/db-verify.ts",
+    "db:smoke": "node --import tsx ./scripts/db-smoke.ts",
     "plans:list": "node --import tsx ./scripts/list-plans.ts",
     "validate:fixture": "node --import tsx ./scripts/validate-synthetic-fixture.ts",
     "test": "vitest run",
@@ -21,11 +25,13 @@
     "ajv": "8.18.0",
     "ajv-formats": "3.0.1",
     "commander": "14.0.3",
+    "pg": "^8.20.0",
     "yaml": "2.8.2",
     "zod": "4.3.6"
   },
   "devDependencies": {
     "@types/node": "24.12.0",
+    "@types/pg": "^8.18.0",
     "tsx": "4.21.0",
     "typescript": "5.9.3",
     "vitest": "3.2.4"

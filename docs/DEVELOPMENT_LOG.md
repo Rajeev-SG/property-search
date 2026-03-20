@@ -1,5 +1,63 @@
 # Development Log
 
+## 2026-03-20T04:30:00Z — Ticket 004 database baseline in progress
+
+### What changed
+
+- Added the first checked-in SQL migration baseline at `db/migrations/001_pipeline_baseline.sql`.
+- Added a deterministic Postgres migration runner, migration status reporter, and schema verifier to `@property-search/harness`.
+- Added root and CLI entrypoints for `db:migrate`, `db:status`, and `db:verify`, plus a fresh-database smoke script.
+- Updated architecture, reliability, README, and status docs to reflect the new database baseline and the artifact-path retention rule.
+- Added migration discovery coverage in the test suite.
+
+### Why it changed
+
+Ticket `004` requires an executable Postgres schema baseline for source registry, profiling, raw artifact metadata, extracted listings, canonical properties, and listing-to-property linkage records. The repo previously only had placeholder migration docs.
+
+### Files touched
+
+- `package.json`
+- `pnpm-lock.yaml`
+- `apps/cli/package.json`
+- `apps/cli/src/index.ts`
+- `db/migrations/README.md`
+- `db/migrations/001_pipeline_baseline.sql`
+- `packages/harness/package.json`
+- `packages/harness/src/database.ts`
+- `packages/harness/src/index.ts`
+- `scripts/db-migrate.ts`
+- `scripts/db-status.ts`
+- `scripts/db-verify.ts`
+- `scripts/db-smoke.ts`
+- `tests/database-migrations.test.ts`
+- `README.md`
+- `ARCHITECTURE.md`
+- `docs/RELIABILITY.md`
+- `docs/TESTING.md`
+- `docs/PROJECT_STATUS.md`
+- `docs/TICKET_INDEX.md`
+- `docs/DEVELOPMENT_LOG.md`
+
+### Validation performed
+
+- Ran `docker compose up -d`.
+- Ran `pnpm db:smoke`.
+- Ran `pnpm db:migrate`.
+- Ran `pnpm db:status`.
+- Ran `pnpm db:verify`.
+- Ran `pnpm run doctor`.
+- Ran `pnpm validate:fixture`.
+- Ran `pnpm typecheck`.
+- Ran `pnpm run typecheck:workspace`.
+- Ran `pnpm run smoke:cli`.
+- Ran `pnpm test`.
+
+### Validation results
+
+- Fresh temporary database migration smoke: passed.
+- Default local database migration and schema verification: passed.
+- Doctor, fixture validation, typechecks, CLI smoke, and full Vitest suite: passed.
+
 ## 2026-03-20T03:45:00Z — Unattended handoff guardrails hardened
 
 ### What changed

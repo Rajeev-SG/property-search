@@ -8,6 +8,9 @@
     "doctor": "node --import tsx ./src/index.ts doctor",
     "plans": "node --import tsx ./src/index.ts plans",
     "validate-fixture": "node --import tsx ./src/index.ts validate-fixture",
+    "db:migrate": "node --import tsx ./src/index.ts db migrate",
+    "db:status": "node --import tsx ./src/index.ts db status",
+    "db:verify": "node --import tsx ./src/index.ts db verify",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {

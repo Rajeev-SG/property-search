@@ -7,6 +7,7 @@
 3. adapter contract tests
 4. end-to-end thin-slice tests on synthetic fixtures
 5. domain evals on real saved pages once collected
+6. migration smoke checks on a fresh local Postgres database when schema work changes
 
 ## CI gates
 
@@ -27,6 +28,10 @@ Commands:
 - `pnpm smoke:browser-use`
 
 These are not required on every local edit, but they should be run whenever provider setup or provider-facing harness logic changes.
+
+## Database smoke tests
+
+Use `pnpm db:smoke` when changing SQL migrations or schema verification logic. It creates a fresh temporary database, applies the checked-in migrations, verifies the expected core tables, and drops the temporary database again.
 
 ## Eval philosophy
 

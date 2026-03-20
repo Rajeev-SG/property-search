@@ -63,6 +63,15 @@ Important:
 - future raw inputs should keep the same header shape while varying only by row content
 - implementation should normalize that raw seed into an internal source-registry contract rather than assuming the example file is the only supported shape
 
+## Database baseline
+
+Ticket `004` establishes the first checked-in Postgres schema baseline.
+
+- SQL migrations live in `db/migrations/`
+- the migration runner records applied files in `schema_migrations`
+- raw page evidence stays on disk under `artifacts/`; Postgres stores metadata, hashes, crawl policy, and artifact paths
+- use `pnpm db:smoke` when you need a clean migration validation without reusing the default local database
+
 ## Local-only design constraints in this seed
 
 Included:
@@ -83,6 +92,7 @@ Explicitly excluded for now:
 ```bash
 pnpm install --frozen-lockfile
 docker compose up -d
+pnpm db:migrate
 pnpm run doctor
 pnpm validate:fixture
 pnpm test
@@ -97,6 +107,10 @@ At the time of writing, the active repo ticket is `004-database-schema-and-migra
 ## Commands
 
 - `pnpm run doctor` — validate required repo files and harness readiness
+- `pnpm db:migrate` — apply deterministic SQL migrations to local Postgres
+- `pnpm db:status` — report applied and pending SQL migrations
+- `pnpm db:verify` — verify the expected core pipeline tables exist
+- `pnpm db:smoke` — create a fresh temporary database, apply migrations, and verify the baseline schema
 - `pnpm plans:list` — list broad execution plans
 - `pnpm validate:fixture` — validate the synthetic extracted-listing, canonical-property, and search-document fixtures
 - `pnpm test` — run tests
