@@ -26,8 +26,16 @@ hooks:
       SOURCE_REMOTE_URL="$(git -C "$SOURCE_PATH" remote get-url origin 2>/dev/null || true)"
       SOURCE_BRANCH="$(git -C "$SOURCE_PATH" symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
       git clone --no-local "$SOURCE_PATH" .
-      if [ -n "$SOURCE_REMOTE_URL" ]; then
+      CURRENT_ORIGIN_URL="$(git remote get-url origin 2>/dev/null || true)"
+      if [ -n "$SOURCE_REMOTE_URL" ] && [ "$CURRENT_ORIGIN_URL" != "$SOURCE_REMOTE_URL" ]; then
         git remote set-url origin "$SOURCE_REMOTE_URL"
+        CURRENT_ORIGIN_URL="$SOURCE_REMOTE_URL"
+      fi
+      if [ "$CURRENT_ORIGIN_URL" = "$SOURCE_PATH" ]; then
+        echo "after_create: workspace origin still points at local source path; GitHub PR automation will be unavailable." >&2
+        exit 1
+      fi
+      if [ -n "$CURRENT_ORIGIN_URL" ]; then
         git fetch origin --prune
         if [ -n "$SOURCE_BRANCH" ] && git show-ref --verify --quiet "refs/remotes/origin/$SOURCE_BRANCH"; then
           git checkout -B "$SOURCE_BRANCH" "origin/$SOURCE_BRANCH"

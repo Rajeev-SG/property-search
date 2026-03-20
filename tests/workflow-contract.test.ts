@@ -11,6 +11,8 @@ describe("workflow contract", () => {
 
     expect(workflow).toContain("create or update exactly one PR");
     expect(workflow).toContain(".github/pull_request_template.md");
+    expect(workflow).toContain("CURRENT_ORIGIN_URL");
+    expect(workflow).toContain("workspace origin still points at local source path");
     expect(workflow).toContain("Collect PR review comments, unresolved review threads, review state, mergeability, OpenReview state for the current PR head, and required check status.");
     expect(workflow).toContain("apply the smallest fix on the same branch");
     expect(workflow).toContain("openreview-property-search");

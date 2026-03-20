@@ -1,5 +1,34 @@
 # Development Log
 
+## 2026-03-20T16:10:00Z — RAJ-23 workflow bootstrap remote normalization
+
+### What changed
+
+- Hardened the `WORKFLOW.md` `after_create` hook so isolated workspaces compare the cloned `origin` URL against the source repository's GitHub remote, reset it when needed, and fail fast if the workspace still points at the local source path.
+- Expanded `tests/workflow-contract.test.ts` to lock the remote-normalization and fail-fast guard into the workflow contract.
+
+### Why it changed
+
+- The disposable `RAJ-23` validation workspace bootstrapped with `origin` set to `/Users/rajeev/Code/property-search`, which prevented `gh repo view` from detecting the GitHub repository and blocked the unattended PR/OpenReview loop before PR creation.
+
+### Files touched
+
+- `WORKFLOW.md`
+- `tests/workflow-contract.test.ts`
+- `docs/DEVELOPMENT_LOG.md`
+
+### Validation performed
+
+- Ran `pnpm run doctor`.
+- Ran `pnpm typecheck`.
+- Ran `pnpm test -- tests/workflow-contract.test.ts`.
+
+### Validation results
+
+- Harness doctor passed.
+- Root TypeScript checks passed.
+- Vitest passed, including the workflow-contract coverage that now asserts the remote-normalization guard.
+
 ## 2026-03-20T15:55:00Z — Symphony OpenReview gating and Linear milestone contract
 
 ### What changed
