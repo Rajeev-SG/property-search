@@ -167,6 +167,8 @@ If current-head OpenReview is still pending but remains within the configured ti
 
 ## OpenReview lifecycle visibility
 
+The `RAJ-27` follow-up validation pass exists to confirm that a non-zero `gh pr checks` exit code does not cause a false `In Review` fallback when current-head OpenReview feedback is still pending or has already resolved as non-blocking.
+
 Use explicit lifecycle labels in Linear milestone comments so the unattended run leaves a durable audit trail for the current PR head:
 
 - `triggered`: the PR exists and the `@openreview-property-search` trigger comment was posted; record the PR URL and trigger timestamp immediately.
