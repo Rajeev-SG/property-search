@@ -21,7 +21,8 @@
     "dev": "pnpm --filter @property-search/cli run dev",
     "smoke:cli": "pnpm --filter @property-search/cli run doctor",
     "smoke:vendors": "node --import tsx ./scripts/smoke-external-vendors.ts",
-    "smoke:browser-use": "uv run --with browser-use --with python-dotenv python scripts/browser-use-smoke.py"
+    "smoke:browser-use": "uv run --with browser-use --with python-dotenv python scripts/browser-use-smoke.py",
+    "lint": "oxlint"
   },
   "dependencies": {
     "@property-search/domain": "workspace:*",
@@ -36,6 +37,7 @@
   "devDependencies": {
     "@types/node": "24.12.0",
     "@types/pg": "^8.18.0",
+    "oxlint": "1.80.0",
     "tsx": "4.21.0",
     "typescript": "5.9.3",
     "vitest": "3.2.4"
